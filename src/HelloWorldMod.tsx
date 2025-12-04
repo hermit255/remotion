@@ -1,6 +1,7 @@
-import { spring } from "remotion";
+import { spring, staticFile } from "remotion";
 import {
   AbsoluteFill,
+  Html5Audio,
   interpolate,
   Sequence,
   useCurrentFrame,
@@ -19,7 +20,7 @@ export const myCompSchema = z.object({
   logoColor2: zColor(),
 });
 
-export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
+export const HelloWorldMod: React.FC<z.infer<typeof myCompSchema>> = ({
   titleText: propOne,
   titleColor: propTwo,
   logoColor1,
@@ -58,6 +59,7 @@ export const HelloWorld: React.FC<z.infer<typeof myCompSchema>> = ({
   // A <AbsoluteFill> is just a absolutely positioned <div>!
   return (
     <AbsoluteFill style={{ backgroundColor: "white" }}>
+      <Html5Audio src={staticFile("sound/music/Morning.mp3")} />
       <AbsoluteFill style={{ opacity }}>
         <AbsoluteFill style={{ transform: `translateY(${logoTranslation}px)` }}>
           <Logo logoColor1={logoColor1} logoColor2={logoColor2} />
