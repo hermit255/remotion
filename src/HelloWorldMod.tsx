@@ -59,7 +59,7 @@ export const HelloWorldMod: React.FC<z.infer<typeof myCompSchema>> = ({
   // A <AbsoluteFill> is just a absolutely positioned <div>!
   return (
     <AbsoluteFill style={{ backgroundColor: "white" }}>
-      <Html5Audio src={staticFile("sound/music/Morning.mp3")} />
+      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} />
       <AbsoluteFill style={{ opacity }}>
         <AbsoluteFill style={{ transform: `translateY(${logoTranslation}px)` }}>
           <Logo logoColor1={logoColor1} logoColor2={logoColor2} />
@@ -71,6 +71,20 @@ export const HelloWorldMod: React.FC<z.infer<typeof myCompSchema>> = ({
         {/* The subtitle will only enter on the 75th frame. */}
         <Sequence from={75}>
           <Subtitle />
+        </Sequence>
+        <Sequence from={25}>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "10%",
+              right: "50%",
+              width: "200px",
+              height: "200px",
+              transform: `translateY(${logoTranslation}px)`,
+            }}
+          >
+            <Logo logoColor1={logoColor1} logoColor2={logoColor2} />
+          </div>
         </Sequence>
       </AbsoluteFill>
     </AbsoluteFill>
