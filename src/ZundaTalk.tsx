@@ -2,23 +2,48 @@ import { staticFile } from "remotion";
 import {
   AbsoluteFill,
   Html5Audio,
+  interpolate,
   Sequence,
   useCurrentFrame,
-  useVideoConfig,
 } from "remotion";
+import { z } from "zod";
 import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
 
-const opacity=1;
-export const ZundaTalk: React.FC = ({}) => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+export const zundaTalkSchema = z.object({
+  jumpDuration: z.number().int().positive(), // 1回のジャンプが開始から終了まで何フレームか
+  jumpInterval: z.number().int().positive(), // ジャンプ発生のインターバルフレーム
+  jumpHeight: z.number().positive().optional(), // 跳ねる高さ（ピクセル）
+});
 
-  // 上下に跳ねる動き（周期的な動き）
-  // 1秒間に2回跳ねる（fps * 2 = 1秒間のフレーム数）
-  const bounceSpeed = 2; // 1秒間の跳ね回数
-  const bounceHeight = 20; // 跳ねる高さ（ピクセル）
-  const bounce = Math.sin((frame / fps) * bounceSpeed * Math.PI * 2) * bounceHeight;
+const opacity=1;
+export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({
+  jumpDuration,
+  jumpInterval,
+  jumpHeight,
+}) => {
+  const frame = useCurrentFrame();
+
+  // ジャンプ周期の計算
+  const cycleLength = jumpDuration + jumpInterval; // 1サイクルの長さ（ジャンプ + 待機）
+  const cyclePosition = frame % cycleLength; // 現在のサイクル内の位置
+
+  // ジャンプ中かどうか
+  const isJumping = cyclePosition < jumpDuration;
+  
+  // ジャンプの動き（0 → height → 0）
+  const height = jumpHeight ?? 20; // デフォルト値: 20px
+  const bounce = isJumping
+    ? interpolate(
+        cyclePosition,
+        [0, jumpDuration / 2, jumpDuration],
+        [0, height, 0],
+        {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        }
+      )
+    : 0;
 
   // A <AbsoluteFill> is just a absolutely positioned <div>!
   return (

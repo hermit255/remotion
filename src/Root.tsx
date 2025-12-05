@@ -3,7 +3,7 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { HelloWorldMod } from "./HelloWorldMod";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { ZundaTalk } from "./ZundaTalk";
+import { ZundaTalk, zundaTalkSchema } from "./ZundaTalk";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -67,21 +67,20 @@ export const RemotionRoot: React.FC = () => {
 
       <Composition
         // You can take the "id" to render a video:
-        // npx remotion render HelloWorld
+        // npx remotion render ZundaTalk
         id="ZundaTalk"
-        component={ZundaTalk  }
+        component={ZundaTalk}
         durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}
         // You can override these props for each render:
         // https://www.remotion.dev/docs/parametrized-rendering
-        schema={myCompSchema}
+        schema={zundaTalkSchema}
         defaultProps={{
-          titleText: "Welcome to Remotion Mod",
-          titleColor: "#000000",
-          logoColor1: "#91EAE4",
-          logoColor2: "#86A8E7",
+          jumpDuration: 5, // 1回のジャンプが開始から終了まで15フレーム（fps=30なら0.5秒）
+          jumpInterval: 25, // ジャンプ発生のインターバル75フレーム（fps=30なら2.5秒）
+          jumpHeight: 20, // 跳ねる高さ（ピクセル）
         }}
       />
     </>
