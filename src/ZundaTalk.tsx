@@ -2,48 +2,23 @@ import { staticFile } from "remotion";
 import {
   AbsoluteFill,
   Html5Audio,
-  interpolate,
   Sequence,
-  useCurrentFrame,
 } from "remotion";
 import { z } from "zod";
 import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
+import { useJump } from "./hooks/useJump";
 
-export const zundaTalkSchema = z.object({
-  jumpDuration: z.number().int().positive(), // 1回のジャンプが開始から終了まで何フレームか
-  jumpInterval: z.number().int().positive(), // ジャンプ発生のインターバルフレーム
-  jumpHeight: z.number().positive().optional(), // 跳ねる高さ（ピクセル）
-});
+export const zundaTalkSchema = z.object({});
 
 const opacity=1;
-export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({
-  jumpDuration,
-  jumpInterval,
-  jumpHeight,
-}) => {
-  const frame = useCurrentFrame();
-
-  // ジャンプ周期の計算
-  const cycleLength = jumpDuration + jumpInterval; // 1サイクルの長さ（ジャンプ + 待機）
-  const cyclePosition = frame % cycleLength; // 現在のサイクル内の位置
-
-  // ジャンプ中かどうか
-  const isJumping = cyclePosition < jumpDuration;
-  
-  // ジャンプの動き（0 → height → 0）
-  const height = jumpHeight ?? 20; // デフォルト値: 20px
-  const bounce = isJumping
-    ? interpolate(
-        cyclePosition,
-        [0, jumpDuration / 2, jumpDuration],
-        [0, height, 0],
-        {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-        }
-      )
-    : 0;
+export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = () => {
+  // ZundaTalk内部でジャンプパラメータを設定
+  const bounce = useJump({
+    jumpDuration: 5, // 1回のジャンプが開始から終了まで5フレーム
+    jumpInterval: 25, // ジャンプ発生のインターバル25フレーム
+    jumpHeight: 20, // 跳ねる高さ（ピクセル）
+  });
 
   // A <AbsoluteFill> is just a absolutely positioned <div>!
   return (

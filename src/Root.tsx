@@ -77,11 +77,7 @@ export const RemotionRoot: React.FC = () => {
         // You can override these props for each render:
         // https://www.remotion.dev/docs/parametrized-rendering
         schema={zundaTalkSchema}
-        defaultProps={{
-          jumpDuration: 5, // 1回のジャンプが開始から終了まで15フレーム（fps=30なら0.5秒）
-          jumpInterval: 25, // ジャンプ発生のインターバル75フレーム（fps=30なら2.5秒）
-          jumpHeight: 20, // 跳ねる高さ（ピクセル）
-        }}
+        defaultProps={{}}
       />
     </>
   );
