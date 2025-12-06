@@ -1,4 +1,6 @@
 import { staticFile } from "remotion";
+import {loadFont} from '@remotion/google-fonts/TitanOne';
+const {fontFamily} = loadFont(); 
 import {
   Html5Audio,
   Sequence,
@@ -14,6 +16,7 @@ export type Talk = {
   audioDurationInFrames: number;
   durationInFrames?: number;
   from?: number;
+  text: string;
 };
 // Sequenceを生成する関数
 export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
@@ -24,6 +27,12 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
       durationInFrames={talk.durationInFrames}
     >
       <Html5Audio src={talk.src} />
+      <div style={{
+        position: "absolute", bottom: "10%", width: "1920px",
+        fontSize: "40px", fontWeight: "bold", textAlign: "center",
+      }}>
+        <span style={{ fontFamily, backgroundColor: "black", color: "white", padding: "10px", borderRadius: "10px" }}>{talk.text}</span>
+      </div>
     </Sequence>
   )
 };
@@ -37,18 +46,21 @@ export const useSequence = (): Talk[] => {
       voice: 3,
       src: staticFile("sound/voice/sample/sample_1.wav"),
       audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_1.wav")),
+      text: "こんにちは、僕はずんだもんなのだ",
     },
     {
       key: "sample_2",
       voice: 2,
       src: staticFile("sound/voice/sample/sample_2.wav"),
       audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_2.wav")),
+      text: "こんにちは、私は四国めたんなのだ",
     },
     {
       key: "sample_3",
       voice: 3,
       src: staticFile("sound/voice/sample/sample_3.wav"),
       audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_3.wav")),
+      text: "めたん、語尾が間違ってるのだ",
     },
   ];
 
