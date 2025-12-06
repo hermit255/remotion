@@ -18,6 +18,12 @@ export type Talk = {
   from?: number;
   text: string;
 };
+type Message = {
+  key: string;
+  voice: number;
+  text: string;
+  intervalFrame?: number;
+};
 // Sequenceを生成する関数
 export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
   return (talk.from !== undefined && talk.from !== null && talk.durationInFrames && talk.src) && (
@@ -39,38 +45,39 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
 
 // talks配列を生成する関数（コンポーネント内で呼び出す）
 export const useSequence = (): Talk[] => {
-  // 手動入力想定
-  const talks: Talk[] = [
+  const messages: Message[] = [
     {
       key: "sample_1",
       voice: 3,
-      src: staticFile("sound/voice/sample/sample_1.wav"),
-      audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_1.wav")),
       text: "こんにちは、僕はずんだもんなのだ",
     },
     {
       key: "sample_2",
       voice: 2,
-      src: staticFile("sound/voice/sample/sample_2.wav"),
-      audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_2.wav")),
       text: "こんにちは、私は四国めたんなのだ",
     },
     {
       key: "sample_3",
       voice: 3,
-      src: staticFile("sound/voice/sample/sample_3.wav"),
-      audioDurationInFrames: useAudioDurationInFrames(staticFile("sound/voice/sample/sample_3.wav")),
       text: "めたん、語尾が間違ってるのだ",
     },
-  ];
-
-  // fromとdurationInFramesを計算
-  let currentFrame = 0;
-  for (const [key] of talks.entries()) {
-    const audioDurationInFrames: number = talks[key].audioDurationInFrames;
-    talks[key].from = currentFrame;
-    talks[key].durationInFrames = (audioDurationInFrames || 0) + (talks[key].intervalFrame || defaultIntervalFrame);
-    currentFrame += talks[key].durationInFrames || 0;
+  ]
+  const talks: Talk[] = [];
+  let startFrame = 0;
+  for (const message of messages) {
+    const src = staticFile(`sound/voice/sample/${message.key}.wav`);
+    const audioDurationInFrames = useAudioDurationInFrames(src);
+    const durationInFrames = (audioDurationInFrames || 0) + (message.intervalFrame || defaultIntervalFrame);
+    talks.push({
+      key: message.key,
+      voice: message.voice,
+      src: src,
+      audioDurationInFrames: audioDurationInFrames,
+      durationInFrames: durationInFrames,
+      from: startFrame,
+      text: message.text,
+    });
+    startFrame += durationInFrames;
   }
 
   return talks;
