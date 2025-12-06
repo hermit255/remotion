@@ -80,6 +80,7 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
       <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} />
+      <img src={staticFile("img/bg/room.jpg")} alt="bg" style={{}} />
       {/* ZundamonとMetanを常に描画（スタイルは現在のフレームに応じて変更） */}
       <Zundamon style={currentZundamonStyle} />
       <Metan style={currentMetanStyle} />

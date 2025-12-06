@@ -5,7 +5,7 @@ import {
 export const Metan: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = (props) => {
   return (
     <img
-      src={staticFile("img/characters/metan.png")}
+      src={staticFile("img/characters/metan.webp")}
       alt="Metan"
       {...props}
     />
