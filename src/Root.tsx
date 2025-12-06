@@ -75,7 +75,10 @@ export const RemotionRoot: React.FC = () => {
         // You can override these props for each render:
         // https://www.remotion.dev/docs/parametrized-rendering
         schema={zundaTalkSchema}
-        defaultProps={{}}
+        defaultProps={{
+          // 各SequenceでのZundamonとMetanのスタイルを外部から制御可能
+          // デフォルトは空（コンポーネント内のデフォルトスタイルが使用される）
+        }}
       />
     </>
   );
