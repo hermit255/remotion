@@ -1,5 +1,6 @@
 import { staticFile } from "remotion";
-import {loadFont} from '@remotion/google-fonts/TitanOne';
+// import { loadFont } from '@remotion/google-fonts/NotoSansJP';
+import { loadFont } from '@remotion/google-fonts/ZenMaruGothic';
 const {fontFamily} = loadFont(); 
 import {
   Html5Audio,
