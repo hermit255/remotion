@@ -5,9 +5,9 @@ import {
   useCurrentFrame,
 } from "remotion";
 import { z } from "zod";
-import { Zundamon } from "../../../Character/Zundamon";
-import { Metan } from "../../../Character/Metan";
-import { useTalks, genSequenceTalk, Message } from "./Sequence";
+import { Zundamon } from "../../Character/Zundamon";
+import { Metan } from "../../Character/Metan";
+import { useTalks, genSequenceTalk } from "./Sequence";
 // import { useJump } from "./hooks/useJump";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義する型
@@ -22,7 +22,15 @@ type CharacterStyle = {
   transform?: string;
 };
 
-export const zundaTalkSchema = z.object({});
+// messagesを渡すようにしたい
+export const zundaTalkSchema = z.object({
+  messages: z.array(z.object({
+    key: z.string(),
+    fileName: z.string(),
+    voice: z.number(),
+    text: z.string(),
+  })),
+});
 
 // デフォルトのdurationInFrames（音声ファイルが読み込まれるまでの暫定値）
 // 実際の値はコンポーネント内で計算される
@@ -45,27 +53,7 @@ const defaultMetanStyle: CharacterStyle = {
   height: "500px",
 };
 
-export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = () => {
-  const messages: Message[] = [
-    {
-      key: "sample_1",
-      fileName: "sample_1.wav",
-      voice: 3,
-      text: "こんにちは、僕はずんだもんなのだ",
-    },
-    {
-      key: "sample_2",
-      fileName: "sample_2.wav",
-      voice: 2,
-      text: "こんにちは、私は四国めたんなのだ",
-    },
-    {
-      key: "sample_3",
-      fileName: "sample_3.wav",
-      voice: 3,
-      text: "めたん、語尾が間違ってるのだ",
-    },
-  ];
+export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages }) => {
   const talks = useTalks(messages);
 
   const zunda = ZUNDAMON;

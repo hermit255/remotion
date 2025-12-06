@@ -1,0 +1,22 @@
+{
+    "messages": [
+        {
+          "key": "sample_1",
+          "fileName": "sample_1.wav",
+          "voice": 3,
+          "text": "こんにちは、僕はずんだもんなのだ"
+        },
+        {
+          "key": "sample_2",
+          "fileName": "sample_2.wav",
+          "voice": 2,
+          "text": "こんにちは、私は四国めたんなのだ"
+        },
+        {
+          "key": "sample_3",
+          "fileName": "sample_3.wav",
+          "voice": 3,
+          "text": "めたん、語尾が間違ってるのだ"
+        }
+    ]
+}

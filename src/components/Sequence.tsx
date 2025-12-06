@@ -5,7 +5,7 @@ import {
   Html5Audio,
   Sequence,
 } from "remotion";
-import { useAudioDurationInFrames } from "../../hooks/useAudioDurationInFrames";
+import { useAudioDurationInFrames } from "../hooks/useAudioDurationInFrames";
 
 const voicePath: string = "sound/voice/";
 const defaultIntervalFrame = 10;
@@ -25,27 +25,6 @@ export type Message = {
   voice: number;
   text: string;
   intervalFrame?: number;
-};
-// メッセージからtalksを生成する関数
-const genTalks = (messages: Message[]): Talk[] => {
-  const talks: Talk[] = [];
-  let startFrame = 0;
-  for (const message of messages) {
-    const src = staticFile(voicePath + message.fileName);
-    const audioDurationInFrames = useAudioDurationInFrames(src);
-    const durationInFrames = (audioDurationInFrames || 0) + (message.intervalFrame || defaultIntervalFrame);
-    talks.push({
-      key: message.key,
-      voice: message.voice,
-      src: src,
-      audioDurationInFrames: audioDurationInFrames,
-      durationInFrames: durationInFrames,
-      from: startFrame,
-      text: message.text,
-    });
-    startFrame += durationInFrames;
-  }
-  return talks;
 };
 // Sequenceを生成する関数
 export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
@@ -68,6 +47,30 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
 
 // talks配列を生成する関数（コンポーネント内で呼び出す）
 export const useTalks = (messages: Message[]): Talk[] => {
-  const talks: Talk[] = genTalks(messages);;
+  // 各メッセージの音声ファイルの長さを取得
+  // フックのルールに従い、すべてのフックを同じ順序で呼び出す
+  const audioDurations = messages.map((message, index) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useAudioDurationInFrames(staticFile(voicePath + message.fileName));
+  });
+
+  const talks: Talk[] = [];
+  let startFrame = 0;
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[i];
+    const src = staticFile(voicePath + message.fileName);
+    const audioDurationInFrames = audioDurations[i];
+    const durationInFrames = (audioDurationInFrames || 0) + (message.intervalFrame || defaultIntervalFrame);
+    talks.push({
+      key: message.key,
+      voice: message.voice,
+      src: src,
+      audioDurationInFrames: audioDurationInFrames,
+      durationInFrames: durationInFrames,
+      from: startFrame,
+      text: message.text,
+    });
+    startFrame += durationInFrames;
+  }
   return talks;
 };

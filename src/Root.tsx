@@ -3,9 +3,13 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { HelloWorldMod } from "./HelloWorldMod";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { ZundaTalk, zundaTalkSchema, ZundaTalkDurationInFrames } from "./projects/Sample/ZundaTalk";
+import { ZundaTalk, zundaTalkSchema, ZundaTalkDurationInFrames } from "./components/ZundaTalk";
+import { Message } from "./components/Sequence";
 
 // Each <Composition> is an entry in the sidebar!
+
+const data = require('./projects/General/sample.json');
+const messages: Message[] = data.messages;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -64,20 +68,15 @@ export const RemotionRoot: React.FC = () => {
       />
 
       <Composition
-        // You can take the "id" to render a video:
-        // npx remotion render ZundaTalk
         id="ZundaTalk"
         component={ZundaTalk}
         durationInFrames={ZundaTalkDurationInFrames}
         fps={30}
         width={1920}
         height={1080}
-        // You can override these props for each render:
-        // https://www.remotion.dev/docs/parametrized-rendering
         schema={zundaTalkSchema}
         defaultProps={{
-          // 各SequenceでのZundamonとMetanのスタイルを外部から制御可能
-          // デフォルトは空（コンポーネント内のデフォルトスタイルが使用される）
+          messages: messages
         }}
       />
     </>
