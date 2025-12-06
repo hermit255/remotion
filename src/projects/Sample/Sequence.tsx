@@ -7,6 +7,7 @@ import {
 } from "remotion";
 import { useAudioDurationInFrames } from "../../hooks/useAudioDurationInFrames";
 
+const voicePath: string = "sound/voice/";
 const defaultIntervalFrame = 10;
 export type Talk = {
   key: string;
@@ -18,11 +19,33 @@ export type Talk = {
   from?: number;
   text: string;
 };
-type Message = {
+export type Message = {
   key: string;
+  fileName: string;
   voice: number;
   text: string;
   intervalFrame?: number;
+};
+// メッセージからtalksを生成する関数
+const genTalks = (messages: Message[]): Talk[] => {
+  const talks: Talk[] = [];
+  let startFrame = 0;
+  for (const message of messages) {
+    const src = staticFile(voicePath + message.fileName);
+    const audioDurationInFrames = useAudioDurationInFrames(src);
+    const durationInFrames = (audioDurationInFrames || 0) + (message.intervalFrame || defaultIntervalFrame);
+    talks.push({
+      key: message.key,
+      voice: message.voice,
+      src: src,
+      audioDurationInFrames: audioDurationInFrames,
+      durationInFrames: durationInFrames,
+      from: startFrame,
+      text: message.text,
+    });
+    startFrame += durationInFrames;
+  }
+  return talks;
 };
 // Sequenceを生成する関数
 export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
@@ -44,41 +67,7 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
 };
 
 // talks配列を生成する関数（コンポーネント内で呼び出す）
-export const useSequence = (): Talk[] => {
-  const messages: Message[] = [
-    {
-      key: "sample_1",
-      voice: 3,
-      text: "こんにちは、僕はずんだもんなのだ",
-    },
-    {
-      key: "sample_2",
-      voice: 2,
-      text: "こんにちは、私は四国めたんなのだ",
-    },
-    {
-      key: "sample_3",
-      voice: 3,
-      text: "めたん、語尾が間違ってるのだ",
-    },
-  ]
-  const talks: Talk[] = [];
-  let startFrame = 0;
-  for (const message of messages) {
-    const src = staticFile(`sound/voice/sample/${message.key}.wav`);
-    const audioDurationInFrames = useAudioDurationInFrames(src);
-    const durationInFrames = (audioDurationInFrames || 0) + (message.intervalFrame || defaultIntervalFrame);
-    talks.push({
-      key: message.key,
-      voice: message.voice,
-      src: src,
-      audioDurationInFrames: audioDurationInFrames,
-      durationInFrames: durationInFrames,
-      from: startFrame,
-      text: message.text,
-    });
-    startFrame += durationInFrames;
-  }
-
+export const useTalks = (messages: Message[]): Talk[] => {
+  const talks: Talk[] = genTalks(messages);;
   return talks;
 };

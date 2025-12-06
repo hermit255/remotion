@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 import { Zundamon } from "../../../Character/Zundamon";
 import { Metan } from "../../../Character/Metan";
-import { useSequence, genSequenceTalk } from "./Sequence";
+import { useTalks, genSequenceTalk, Message } from "./Sequence";
 // import { useJump } from "./hooks/useJump";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義する型
@@ -46,7 +46,27 @@ const defaultMetanStyle: CharacterStyle = {
 };
 
 export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = () => {
-  const talks = useSequence();
+  const messages: Message[] = [
+    {
+      key: "sample_1",
+      fileName: "sample_1.wav",
+      voice: 3,
+      text: "こんにちは、僕はずんだもんなのだ",
+    },
+    {
+      key: "sample_2",
+      fileName: "sample_2.wav",
+      voice: 2,
+      text: "こんにちは、私は四国めたんなのだ",
+    },
+    {
+      key: "sample_3",
+      fileName: "sample_3.wav",
+      voice: 3,
+      text: "めたん、語尾が間違ってるのだ",
+    },
+  ];
+  const talks = useTalks(messages);
 
   const zunda = ZUNDAMON;
   const metan = METAN;
