@@ -3,7 +3,7 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { HelloWorldMod } from "./HelloWorldMod";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { ZundaTalk, zundaTalkSchema } from "./ZundaTalk";
+import { ZundaTalk, zundaTalkSchema, ZundaTalkDurationInFrames } from "./projects/Sample/ZundaTalk";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -54,8 +54,6 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
-        // You can override these props for each render:
-        // https://www.remotion.dev/docs/parametrized-rendering
         schema={myCompSchema}
         defaultProps={{
           titleText: "Welcome to Remotion Mod",
@@ -70,7 +68,7 @@ export const RemotionRoot: React.FC = () => {
         // npx remotion render ZundaTalk
         id="ZundaTalk"
         component={ZundaTalk}
-        durationInFrames={150} // 音声ファイルの長さに基づいて動的に計算される（ZundaTalkコンポーネント内で）
+        durationInFrames={ZundaTalkDurationInFrames}
         fps={30}
         width={1920}
         height={1080}
