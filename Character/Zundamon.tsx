@@ -2,15 +2,12 @@ import {
   staticFile,
 } from "remotion";
 
-export const Zundamon: React.FC = ({}) => {
+export const Zundamon: React.FC<React.ImgHTMLAttributes<HTMLImageElement>> = (props) => {
   return (
     <img
       src={staticFile("img/characters/zundamon.png")}
       alt="Zundamon"
-      style={{
-        backgroundColor: "transparent",
-        display: "block",
-      }}
+      {...props}
     />
   );
 };

@@ -26,23 +26,34 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = () => {
       <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} />
       <AbsoluteFill style={{ opacity }}>
         <Sequence from={0}>
-          <div style={
-            {
-              position:
-                "absolute", bottom: "20%", right: "0",
-                width: "400px", height: "400px",
-            }}>
-            <Zundamon />
-          </div>
-          <div style={
-            {
-              position:
-                "absolute", bottom: "27%", left: "0",
-                width: "400px", height: "400px",
-              transform: `translateY(${-bounce}px)`,
-            }}>
-            <Metan />
-          </div>
+          <Metan style={
+          {
+            position: "absolute",
+            bottom: "0", right: "0",
+            height: "500px",
+          }}/>
+          <Zundamon style={
+          {
+            position: "absolute",
+            bottom: "0", left: "0",
+            height: "500px",
+          }}/>
+        </Sequence>
+        <Sequence from={15}>
+          <Metan style={
+          {
+            position: "absolute",
+            bottom: "0", right: "0",
+            height: "500px",
+            transform: `translateY(${-bounce}px)`,
+          }}/>
+          <Zundamon style={
+          {
+            position: "absolute",
+            bottom: "0", left: "0",
+            height: "500px",
+            transform: `translateY(${-bounce}px)`,
+          }}/>
         </Sequence>
       </AbsoluteFill>
     </AbsoluteFill>
