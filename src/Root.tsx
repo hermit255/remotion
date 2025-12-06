@@ -70,7 +70,7 @@ export const RemotionRoot: React.FC = () => {
         // npx remotion render ZundaTalk
         id="ZundaTalk"
         component={ZundaTalk}
-        durationInFrames={150}
+        durationInFrames={150} // 音声ファイルの長さに基づいて動的に計算される（ZundaTalkコンポーネント内で）
         fps={30}
         width={1920}
         height={1080}
