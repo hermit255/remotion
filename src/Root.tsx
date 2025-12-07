@@ -10,6 +10,8 @@ import { Message } from "./components/Sequence";
 
 const data = require('./projects/ZundaTalk/sample.json');
 const messages: Message[] = data.messages;
+const data_sample_2 = require('./projects/ZundaTalk/sample_2.json');
+const messages_2: Message_2[] = data_sample_2.messages;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -77,6 +79,19 @@ export const RemotionRoot: React.FC = () => {
         schema={zundaTalkSchema}
         defaultProps={{
           messages: messages
+        }}
+      />
+
+      <Composition
+        id="sample-2"
+        component={ZundaTalk}
+        durationInFrames={3000}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={zundaTalkSchema}
+        defaultProps={{
+          messages: messages_2
         }}
       />
     </>

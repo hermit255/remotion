@@ -1,0 +1,185 @@
+{
+  "title": "sample_2",
+  "messages": [
+    {
+      "key": "sample_2_1",
+      "fileName": "sample_2_1.wav",
+      "voice": 3,
+      "text": "めたん！このニュース見た？鬼滅の刃の新作、映画で三部作やるって書いてあるのだ！"
+    },
+    {
+      "key": "sample_2_2",
+      "fileName": "sample_2_2.wav",
+      "voice": 2,
+      "text": "ええ、見ましたわ。「無限城編」が劇場版三部作として制作決定というニュースね。Yahoo!ニュースでもトップ扱いでしたわ。"
+    },
+    {
+      "key": "sample_2_3",
+      "fileName": "sample_2_3.wav",
+      "voice": 3,
+      "text": "僕、鬼滅大好きなんだけど、正直「三部作」って言われてもピンとこないのだ。これってすごいの？"
+    },
+    {
+      "key": "sample_2_4",
+      "fileName": "sample_2_4.wav",
+      "voice": 2,
+      "text": "商業的な目線で見ると、とてつもなく強気な戦略ですわ。普通のアニメ映画とは規模感が違います。"
+    },
+    {
+      "key": "sample_2_5",
+      "fileName": "sample_2_5.wav",
+      "voice": 3,
+      "text": "規模感……つまり、お金がいっぱい動くってことなのだ？"
+    },
+    {
+      "key": "sample_2_6",
+      "fileName": "sample_2_6.wav",
+      "voice": 2,
+      "text": "その通りよ。参考までに、前作の『無限列車編』の興行収入がいくらか知っていて？"
+    },
+    {
+      "key": "sample_2_7",
+      "fileName": "sample_2_7.wav",
+      "voice": 3,
+      "text": "うーん、1億円くらい？ずんだ餅が一生食べられる金額なのは間違いないのだ。"
+    },
+    {
+      "key": "sample_2_8",
+      "fileName": "sample_2_8.wav",
+      "voice": 2,
+      "text": "桁が違いますわ。興行通信社の歴代ランキングによると、約404.3億円よ。これは日本歴代1位の記録ですわ。"
+    },
+    {
+      "key": "sample_2_9",
+      "fileName": "sample_2_9.wav",
+      "voice": 3,
+      "text": "400億！？数字が大きすぎて意味がわからないのだ……。"
+    },
+    {
+      "key": "sample_2_10",
+      "fileName": "sample_2_10.wav",
+      "voice": 2,
+      "text": "国民的ヒットと言われた『千と千尋の神隠し』でさえ約316.8億円でしたから、その異常さがわかるでしょ？"
+    },
+    {
+      "key": "sample_2_11",
+      "fileName": "sample_2_11.wav",
+      "voice": 3,
+      "text": "なるほど……。じゃあ、それが3回もあるってことは、単純計算で1200億円！？"
+    },
+    {
+      "key": "sample_2_12",
+      "fileName": "sample_2_12.wav",
+      "voice": 2,
+      "text": "そこは慎重に見るべきね。続編は一般的に、一作目より数字が落ちる傾向があるの。"
+    },
+    {
+      "key": "sample_2_13",
+      "fileName": "sample_2_13.wav",
+      "voice": 3,
+      "text": "えーっ、なんで？続きが気になるからみんな見るはずなのだ。"
+    },
+    {
+      "key": "sample_2_14",
+      "fileName": "sample_2_14.wav",
+      "voice": 2,
+      "text": "「にわかファン」が脱落するからよ。でも、今回の「無限城」は最終決戦だから、リピーターによる買い支えで維持する可能性も高いわね。"
+    },
+    {
+      "key": "sample_2_15",
+      "fileName": "sample_2_15.wav",
+      "voice": 3,
+      "text": "僕は絶対3回とも見るのだ！やっぱり炭治郎が頑張る姿を見ると、勇気がもらえるから人気なんだと思うのだ。"
+    },
+    {
+      "key": "sample_2_16",
+      "fileName": "sample_2_16.wav",
+      "voice": 2,
+      "text": "ずんだもんの言う「感情移入」もヒットの要因の一つね。でも、データ的には別の側面もあるのよ。"
+    },
+    {
+      "key": "sample_2_17",
+      "fileName": "sample_2_17.wav",
+      "voice": 3,
+      "text": "別の側面？教えてほしいのだ。"
+    },
+    {
+      "key": "sample_2_18",
+      "fileName": "sample_2_18.wav",
+      "voice": 2,
+      "text": "制作会社ufotableの映像技術よ。特に映画館の音響とスクリーンで映える「映像美」が、普段アニメを見ない層を映画館に呼んでいるの。"
+    },
+    {
+      "key": "sample_2_19",
+      "fileName": "sample_2_19.wav",
+      "voice": 3,
+      "text": "あー、確かに！技のエフェクトとか、映画館で見ると鳥肌が立つもんね。"
+    },
+    {
+      "key": "sample_2_20",
+      "fileName": "sample_2_20.wav",
+      "voice": 2,
+      "text": "そう。テレビでファンを増やして、最高品質の映像を映画館で有料で提供する。このビジネスモデルが完成されているのよ。"
+    },
+    {
+      "key": "sample_2_21",
+      "fileName": "sample_2_21.wav",
+      "voice": 3,
+      "text": "むぅ、難しい話だけど、とにかく映画館ですごい映像が見られるなら僕は満足なのだ。"
+    },
+    {
+      "key": "sample_2_22",
+      "fileName": "sample_2_22.wav",
+      "voice": 2,
+      "text": "懸念点があるとすれば、完結までに数年かかることによる「飽き」かしら。公開間隔のスケジュール管理がカギになるわね。"
+    },
+    {
+      "key": "sample_2_23",
+      "fileName": "sample_2_23.wav",
+      "voice": 3,
+      "text": "僕は待てるのだ！むしろ楽しみが長く続いて嬉しいのだ。"
+    },
+    {
+      "key": "sample_2_24",
+      "fileName": "sample_2_24.wav",
+      "voice": 2,
+      "text": "そのポジティブさが大衆心理そのものね。この三部作が成功すれば、日本の映画興行史は完全に塗り替えられることになるわ。"
+    },
+    {
+      "key": "sample_2_25",
+      "fileName": "sample_2_25.wav",
+      "voice": 3,
+      "text": "じゃあ、めたんも一緒に見に行くのだ？"
+    },
+    {
+      "key": "sample_2_26",
+      "fileName": "sample_2_26.wav",
+      "voice": 2,
+      "text": "ええ、もちろんですわ。市場調査も兼ねて、初日の初回上映を予約するつもりよ。"
+    },
+    {
+      "key": "sample_2_27",
+      "fileName": "sample_2_27.wav",
+      "voice": 3,
+      "text": "さすがめたん、抜け目ないのだ。僕の分も予約しておいてほしいのだ！"
+    },
+    {
+      "key": "sample_2_28",
+      "fileName": "sample_2_28.wav",
+      "voice": 2,
+      "text": "それは自分でやりなさい。……さて、そろそろお時間ね。"
+    },
+    {
+      "key": "sample_2_29",
+      "fileName": "sample_2_29.wav",
+      "voice": 3,
+      "text": "最後までご視聴ありがとうございました！"
+    },
+    {
+      "key": "sample_2_30",
+      "fileName": "sample_2_30.wav",
+      "voice": 2,
+      "text": "この動画が気に入ってくれたら、高評価・チャンネル登録もお願いします。"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
-import { useTalks, genSequenceTalk } from "../components/Sequence";
+import { useTalks, genSequenceTalk, useTotalDurationInFrames } from "../components/Sequence";
 // import { useJump } from "./hooks/useJump";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義する型
@@ -34,7 +34,7 @@ export const zundaTalkSchema = z.object({
 
 // デフォルトのdurationInFrames（音声ファイルが読み込まれるまでの暫定値）
 // 実際の値はコンポーネント内で計算される
-export const ZundaTalkDurationInFrames = 274; // 暫定値（fps=30なら10秒）
+export const ZundaTalkDurationInFrames = 3000; // 暫定値（fps=30なら10秒）
 
 const ZUNDAMON = "zundamon";
 const METAN = "metan";
@@ -53,16 +53,16 @@ const defaultMetanStyle: CharacterStyle = {
   height: "500px",
 };
 
-export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages }) => {
+export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages, style }) => {
   const talks = useTalks(messages);
 
   const zunda = ZUNDAMON;
   const metan = METAN;
-  const style: Record<string, Record<string, CharacterStyle>> = {
-    sample_1: { [metan]: {} },
-    sample_2: { [zunda]: {} },
-    sample_3: { [zunda]: {} },
-  };
+  // const style: Record<string, Record<string, CharacterStyle>> = {
+  //   sample_1: { [metan]: {} },
+  //   sample_2: { [zunda]: {} },
+  //   sample_3: { [zunda]: {} },
+  // };
 
   const frame = useCurrentFrame();
 
@@ -80,14 +80,14 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages 
       } else if (talk.voice === 2) {
         tmpZundamonStyle = { ...currentZundamonStyle, ...{filter: "brightness(0.5)"} } as React.CSSProperties;
       }
-      currentZundamonStyle = { ...tmpZundamonStyle, ...(style[talk.key][zunda] || {}) } as React.CSSProperties;
-      currentMetanStyle = { ...tmpMetanStyle, ...(style[talk.key][metan] || {}) } as React.CSSProperties;
+      currentZundamonStyle = { ...tmpZundamonStyle, ...(style?.[talk.key]?.[zunda] || {}) } as React.CSSProperties;
+      currentMetanStyle = { ...tmpMetanStyle, ...(style?.[talk.key]?.[metan] || {}) } as React.CSSProperties;
     }
   }
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} />
+      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} volume={0.7} />
       <img src={staticFile("img/bg/room.jpg")} alt="bg" style={{}} />
       {/* ZundamonとMetanを常に描画（スタイルは現在のフレームに応じて変更） */}
       <Zundamon style={currentZundamonStyle} />

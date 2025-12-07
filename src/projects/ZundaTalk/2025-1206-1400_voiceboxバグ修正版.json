@@ -1,0 +1,398 @@
+{
+  "name": "VoiceVox音声合成ワークフロー_Codeノード版",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "88a42772-8a31-4831-8a14-63d6111aee97",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2192,
+        64
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://voice-box:50021/audio_query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "speaker",
+              "value": "={{ $json['data.scenarios'].voice || '2' }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json['data.scenarios'].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b7cc605-4a66-4126-a2df-3bb07ba93c0e",
+      "name": "Audio Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1904,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://voice-box:50021/synthesis",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "speaker",
+              "value": "={{ $json['data.scenarios'].voice || '3' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "3216e0c2-810c-4767-96ab-13295d260428",
+      "name": "VoiceVox API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1536,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "=/storage/{{$binary.data.fileName}}",
+        "options": {}
+      },
+      "id": "f4da27b1-ccd6-4561-8f33-e7a95e12cc10",
+      "name": "ZIPファイル保存",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -1648,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"音声ファイルが生成されました\", \"fileName\": $json.fileName, \"fileCount\": $json.fileCount } }}",
+        "options": {}
+      },
+      "id": "27263ed8-18ba-4e13-a4d5-36fb350fbb8b",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1504,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "compress",
+        "binaryPropertyName": "={{ $binary.keys().join(\",\") }}",
+        "fileName": "={{  $('Extract from File').item.json.data.title + '_' + $now }}.zip"
+      },
+      "type": "n8n-nodes-base.compression",
+      "typeVersion": 1.1,
+      "position": [
+        -1792,
+        -144
+      ],
+      "id": "06fe125f-7e8b-41ab-90ff-ee75cfbb046a",
+      "name": "Compression"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/projects/voice-box/scenario.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -2784,
+        64
+      ],
+      "id": "7925a9e9-a041-4ee9-ac28-930f160d60d2",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2592,
+        64
+      ],
+      "id": "f85000bc-4012-4c14-9ab6-7f2c7eb5ce33",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2992,
+        64
+      ],
+      "id": "08a73ee2-db8b-4c59-988d-7b23f65fa1e8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.scenarios",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2384,
+        64
+      ],
+      "id": "3ea21b34-2344-4ca0-b770-fe61308e02c2",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {
+          "includeBinaries": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -144
+      ],
+      "id": "935ed4e5-c89c-4be8-ba89-19160ae80bc8",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "$input.all().forEach((item, index) => {\n  item.binary.data.fileName = $('Extract from File').first().json.data.title + '_' + (index + 1) + '.wav';\n});\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1872,
+        -144
+      ],
+      "id": "f2a4f3ae-5862-4c1a-a5fc-021cff3e4972",
+      "name": "Rename"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/storage/{{$binary.data.fileName}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        -352
+      ],
+      "id": "c6e47968-b010-4cf3-8888-a7517d959401",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1728,
+        32
+      ],
+      "id": "1ccabb96-1d4e-4ae6-8337-b14b8efea09a",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Rename",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Audio Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Query": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "VoiceVox API": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ZIPファイル保存": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compression": {
+      "main": [
+        [
+          {
+            "node": "ZIPファイル保存",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Compression",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "VoiceVox API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4828edf5-67dc-4eff-b2f0-8564159fc862",
+  "meta": {
+    "instanceId": "dd53f9774124a6e591e177ff2cfe050724c780dfc6f130596704505ee53e9054"
+  },
+  "id": "PcW3HEfxNAI6hRxk",
+  "tags": []
+}
