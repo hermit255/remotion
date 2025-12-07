@@ -3,12 +3,12 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { HelloWorldMod } from "./HelloWorldMod";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
-import { ZundaTalk, zundaTalkSchema, ZundaTalkDurationInFrames } from "./components/ZundaTalk";
+import { ZundaTalk, zundaTalkSchema, ZundaTalkDurationInFrames } from "./templates/ZundaTalk";
 import { Message } from "./components/Sequence";
 
 // Each <Composition> is an entry in the sidebar!
 
-const data = require('./projects/General/sample.json');
+const data = require('./projects/ZundaTalk/sample.json');
 const messages: Message[] = data.messages;
 
 export const RemotionRoot: React.FC = () => {

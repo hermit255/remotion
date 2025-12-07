@@ -18,7 +18,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_node_modules:/home/node/node_modules
-      - ./storage:/storage #ホストでpermissionsを777にしておく
+      - ./src/projects:/projects #ホストでpermissionsを777にしておく
     stdin_open: true
     tty: true
     environment:

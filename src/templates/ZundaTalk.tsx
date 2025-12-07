@@ -5,9 +5,9 @@ import {
   useCurrentFrame,
 } from "remotion";
 import { z } from "zod";
-import { Zundamon } from "../../Character/Zundamon";
-import { Metan } from "../../Character/Metan";
-import { useTalks, genSequenceTalk } from "./Sequence";
+import { Zundamon } from "../Character/Zundamon";
+import { Metan } from "../Character/Metan";
+import { useTalks, genSequenceTalk } from "../components/Sequence";
 // import { useJump } from "./hooks/useJump";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義する型
