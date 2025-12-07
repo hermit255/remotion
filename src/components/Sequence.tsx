@@ -39,9 +39,15 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
       <Html5Audio src={talk.src} volume={1.0} />
       <div style={{
         position: "absolute", bottom: "10%", width: "1920px",
-        fontSize: "40px", fontWeight: "bold", textAlign: "center",
+        display: "flex", justifyContent: "center",
       }}>
-        <span style={{ fontFamily, backgroundColor: "black", color: "white", padding: "10px", borderRadius: "10px" }}>{talk.text}</span>
+        <span style={{
+          fontSize: "40px", fontWeight: "bold",
+          margin: "0 auto", padding: "10px", borderRadius: "10px",
+          fontFamily, color: "white", backgroundColor: "black"
+        }}>
+          {talk.text}
+        </span>
       </div>
     </Sequence>
   )

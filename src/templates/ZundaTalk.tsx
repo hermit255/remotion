@@ -34,8 +34,6 @@ export const zundaTalkSchema = z.object({
 
 // デフォルトのdurationInFrames（音声ファイルが読み込まれるまでの暫定値）
 // 実際の値はコンポーネント内で計算される
-export const ZundaTalkDurationInFrames = 3000; // 暫定値（fps=30なら10秒）
-
 const ZUNDAMON = "zundamon";
 const METAN = "metan";
 // デフォルトのスタイル
@@ -55,7 +53,7 @@ const defaultMetanStyle: CharacterStyle = {
 
 export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages, style }) => {
   const talks = useTalks(messages);
-
+  console.log(useTotalDurationInFrames(talks));
   const zunda = ZUNDAMON;
   const metan = METAN;
   // const style: Record<string, Record<string, CharacterStyle>> = {
@@ -87,7 +85,7 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages,
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} volume={0.7} />
+      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} volume={0.4} loop />
       <img src={staticFile("img/bg/room.jpg")} alt="bg" style={{}} />
       {/* ZundamonとMetanを常に描画（スタイルは現在のフレームに応じて変更） */}
       <Zundamon style={currentZundamonStyle} />

@@ -72,7 +72,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ZundaTalk"
         component={ZundaTalk}
-        durationInFrames={ZundaTalkDurationInFrames}
+        durationInFrames={285}
         fps={30}
         width={1920}
         height={1080}
@@ -85,7 +85,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="sample-2"
         component={ZundaTalk}
-        durationInFrames={3000}
+        durationInFrames={6686}
         fps={30}
         width={1920}
         height={1080}
