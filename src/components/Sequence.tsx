@@ -42,8 +42,8 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
         display: "flex", justifyContent: "center",
       }}>
         <span style={{
-          fontSize: "40px", fontWeight: "bold",
-          margin: "0 auto", padding: "10px", borderRadius: "10px",
+          fontSize: "50px", fontWeight: "bold",
+          maxWidth: "95%", margin: "0 auto", padding: "10px", borderRadius: "10px",
           fontFamily, color: "white", backgroundColor: "black"
         }}>
           {talk.text}

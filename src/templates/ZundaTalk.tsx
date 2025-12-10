@@ -41,14 +41,15 @@ const defaultZundamonStyle: CharacterStyle = {
   position: "absolute",
   bottom: "0",
   left: "0",
-  height: "500px",
+  // scale: "0.5",
+  height: "800px",
 };
 
 const defaultMetanStyle: CharacterStyle = {
   position: "absolute",
   bottom: "0",
   right: "0",
-  height: "500px",
+  height: "800px",
 };
 
 export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages, style }) => {
@@ -85,8 +86,8 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages,
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      <Html5Audio src={staticFile("sound/bgm/Morning.mp3")} volume={0.4} loop />
-      <img src={staticFile("img/bg/room.jpg")} alt="bg" style={{}} />
+      <Html5Audio src={staticFile("sound/bgm/2_23_AM.mp3")} volume={0.1} loop />
+      <img src={staticFile("img/bg/office.jpg")} alt="bg" style={{}} />
       {/* ZundamonとMetanを常に描画（スタイルは現在のフレームに応じて変更） */}
       <Zundamon style={currentZundamonStyle} />
       <Metan style={currentMetanStyle} />
