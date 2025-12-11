@@ -13,7 +13,8 @@ const voicePath: string = "sound/voice/";
 const defaultIntervalFrame: number = 10;
 // Sequenceを生成する関数
 export const genVoiceSequence = (talk: Talk): React.JSX.Element | false => {
-  return (talk.from !== undefined && talk.from !== null && talk.durationInFrames && talk.src) && (
+  if (talk.durationInFrames === null) return;
+  return (
     <Sequence
       key={talk.key + "voice"}
       from={talk.from}
@@ -25,7 +26,8 @@ export const genVoiceSequence = (talk: Talk): React.JSX.Element | false => {
 };
 
 export const genSubtitleSequence = (talk: Talk): React.JSX.Element | false => {
-  return (talk.from !== undefined && talk.from !== null && talk.durationInFrames && talk.src) && (
+  if (talk.durationInFrames === null) return;
+  return (
     <Sequence
       key={talk.key + "subtitle"}
       from={talk.from}
