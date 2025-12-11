@@ -9,10 +9,12 @@ import { getAIScript, getYoutubeDescription } from "../../util/Description";
 const title = "20251213";
 const newsSource = "https://news.yahoo.co.jp/articles/207527d33b55fdb1de0550b3be5c43ce39f409e9";
 const description = "「画材の会社が...」商品ポスターに生成AI使用　サクラクレパスが謝罪「再発防止に向けてチェック体制を強化」";
-console.log(getAIScript(title, description, newsSource));
-console.log(getYoutubeDescription(description, newsSource));
+const youtubeTitle = "商品ポスターに生成AI使用でメーカー謝罪へ" + "【ずんだもん解説】";
+console.log('台本', getAIScript(title, description, newsSource));
+console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
+console.log('YouTubeタイトル', youtubeTitle);
 
-const scenario: Scenario = require(`./${title}.json`);
+const scenario: Scenario = require(`./messages/${title}.json`);
 const messages: Message[] = scenario.messages ?? [];
 const backgroundImagePath = "img/bg/office.jpg";
 const bgmPath = "sound/bgm/2_23_AM.mp3";
@@ -23,12 +25,13 @@ const {talks, totalDurationInFrames} = await getTalks(messages, fps);
 
 export const duration = totalDurationInFrames;
 
-export const Z_20251213 = (_props: ZundaTalkProps): React.JSX.Element => {
+export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
   console.log(totalDurationInFrames);
   return (
 
     <AbsoluteFill>
       <Html5Audio src={staticFile(bgmPath || "sound/bgm/2_23_AM.mp3")} volume={0.1} loop />
+      {talks.map((talk) => genVoiceSequence(talk))}
       <img src={staticFile(backgroundImagePath)} alt="bg" style={{}} />
       <img 
         src={staticFile(`img/misc/${title}.exif`)} 
@@ -43,7 +46,6 @@ export const Z_20251213 = (_props: ZundaTalkProps): React.JSX.Element => {
         }} 
       />
       <ZundaTalkV3 talks={talks} />
-      {talks.map((talk) => genVoiceSequence(talk))}
       {talks.map((talk) => genSubtitleSequence(talk))}
     </AbsoluteFill>
   );
