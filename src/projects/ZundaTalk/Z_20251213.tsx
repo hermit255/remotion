@@ -1,6 +1,6 @@
 import React from "react";
 import { staticFile, Html5Audio, AbsoluteFill } from "remotion";
-import { ZundaTalkV3 } from "../../templates/ZundaTalkV3";
+import { ZundaTalk } from "../../templates/ZundaTalk";
 import { ZundaTalkProps } from "../../schemas/zundaTalkSchema";
 import { Message, Scenario } from "../../schemas/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
@@ -45,7 +45,7 @@ export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
           transform: "translate(-50%, 0)",
         }} 
       />
-      <ZundaTalkV3 talks={talks} />
+      <ZundaTalk talks={talks} />
       {talks.map((talk) => genSubtitleSequence(talk))}
     </AbsoluteFill>
   );

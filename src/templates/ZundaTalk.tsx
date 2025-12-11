@@ -25,7 +25,7 @@ const defaultMetanStyle: CharacterStyle = {
   height: "800px",
 };
 
-export const ZundaTalkV3 = ({ talks, style = {} }: ZundaTalkProps): React.JSX.Element => {
+export const ZundaTalk = ({ talks, style = {} }: ZundaTalkProps): React.JSX.Element => {
   const zunda = ZUNDAMON;
   const metan = METAN;
   const frame = useCurrentFrame();
