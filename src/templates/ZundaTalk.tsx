@@ -1,3 +1,4 @@
+import React from "react";
 import { staticFile } from "remotion";
 import {
   AbsoluteFill,
@@ -8,6 +9,7 @@ import { z } from "zod";
 import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
 import { useTalks, genSequenceTalk, useTotalDurationInFrames } from "../components/Sequence";
+import { messageSchema } from "../schemas/sequenceSchema";
 // import { useJump } from "./hooks/useJump";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義する型
@@ -24,12 +26,7 @@ type CharacterStyle = {
 
 // messagesを渡すようにしたい
 export const zundaTalkSchema = z.object({
-  messages: z.array(z.object({
-    key: z.string(),
-    fileName: z.string(),
-    voice: z.number(),
-    text: z.string(),
-  })),
+  messages: z.array(messageSchema),
 });
 
 // デフォルトのdurationInFrames（音声ファイルが読み込まれるまでの暫定値）
@@ -52,7 +49,7 @@ const defaultMetanStyle: CharacterStyle = {
   height: "800px",
 };
 
-export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages, style }) => {
+export const ZundaTalk = ({ messages, style, imgPath, bgmPath }: z.infer<typeof zundaTalkSchema>): React.JSX.Element => {
   const talks = useTalks(messages);
   console.log(useTotalDurationInFrames(talks));
   const zunda = ZUNDAMON;
@@ -86,8 +83,8 @@ export const ZundaTalk: React.FC<z.infer<typeof zundaTalkSchema>> = ({ messages,
 
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
-      <Html5Audio src={staticFile("sound/bgm/2_23_AM.mp3")} volume={0.1} loop />
-      <img src={staticFile("img/bg/office.jpg")} alt="bg" style={{}} />
+      <Html5Audio src={staticFile(bgmPath || "sound/bgm/2_23_AM.mp3")} volume={0.1} loop />
+      <img src={staticFile(imgPath || "img/bg/office.jpg")} alt="bg" style={{}} />
       {/* ZundamonとMetanを常に描画（スタイルは現在のフレームに応じて変更） */}
       <Zundamon style={currentZundamonStyle} />
       <Metan style={currentMetanStyle} />

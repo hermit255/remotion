@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { staticFile } from "remotion";
 // import { loadFont } from '@remotion/google-fonts/NotoSansJP';
 import { loadFont } from '@remotion/google-fonts/ZenMaruGothic';
@@ -8,28 +8,12 @@ import {
   Sequence,
 } from "remotion";
 import { useAudioDurationInFrames } from "../hooks/useAudioDurationInFrames";
+import { Message, Talk } from "../schemas/sequenceSchema";
 
 const voicePath: string = "sound/voice/";
-const defaultIntervalFrame = 10;
-export type Talk = {
-  key: string;
-  voice: number;
-  src: string;
-  intervalFrame?: number;
-  audioDurationInFrames: number;
-  durationInFrames?: number;
-  from?: number;
-  text: string;
-};
-export type Message = {
-  key: string;
-  fileName: string;
-  voice: number;
-  text: string;
-  intervalFrame?: number;
-};
+const defaultIntervalFrame: number = 10;
 // Sequenceを生成する関数
-export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
+export const genSequenceTalk = (talk: Talk): React.JSX.Element | false => {
   return (talk.from !== undefined && talk.from !== null && talk.durationInFrames && talk.src) && (
     <Sequence
       key={talk.key}
@@ -44,7 +28,7 @@ export const genSequenceTalk: React.FC<Talk> = (talk: Talk) => {
         <span style={{
           fontSize: "50px", fontWeight: "bold",
           maxWidth: "95%", margin: "0 auto", padding: "10px", borderRadius: "10px",
-          fontFamily, color: "white", backgroundColor: "black"
+          fontFamily, color: "white", backgroundColor: "rgb(0, 0, 0, 0.7)"
         }}>
           {talk.text}
         </span>
@@ -70,7 +54,7 @@ export const useTotalDurationInFrames = (talks: Talk[]): number => {
 export const useTalks = (messages: Message[]): Talk[] => {
   // 各メッセージの音声ファイルの長さを取得
   // フックのルールに従い、すべてのフックを同じ順序で呼び出す
-  const audioDurations = messages.map((message, index) => {
+  const audioDurations = messages.map((message) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useAudioDurationInFrames(staticFile(voicePath + message.fileName));
   });
