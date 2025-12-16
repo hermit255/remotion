@@ -1,6 +1,6 @@
 import "./index.css";
 import { Composition } from "remotion";
-import { ZundaMetanTalk, duration, fps } from "./projects/ZundaTalk/Z_20251215";
+import { ZundaMetanTalk, duration, fps } from "./projects/ZundaTalk/Z_20251216";
 // Each <Composition> is an entry in the sidebar!
 
 export const RemotionRoot: React.FC = () => {
