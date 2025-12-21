@@ -5,6 +5,7 @@ VOICEVOX:四国めたん
 ### bgm
 https://dova-s.jp/bgm/play2452.html
 https://dova-s.jp/bgm/download13513.html
+https://dova-s.jp/bgm/download18586.html
 ### ずんだもん
 https://www.pixiv.net/artworks/92641351
 ### 背景

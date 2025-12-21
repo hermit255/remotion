@@ -22,6 +22,6 @@ ${newsSource}
 VOICEVOX:ずんだもん
 VOICEVOX:四国めたん
 立ち絵(坂本アヒル様)：https://twitter.com/sakamoto_ahr
-みんちりえ：https://min-chi.material.jp/
-しゃろう：https://www.dova-s.jp/
+みんちりえ様：https://min-chi.material.jp/
+しゃろう様：https://www.dova-s.jp/
 `;

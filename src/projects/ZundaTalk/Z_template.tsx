@@ -1,5 +1,7 @@
 import React from "react";
 import { staticFile, Html5Audio, AbsoluteFill } from "remotion";
+import { images, basePath as imagePath } from "../../path/images";
+import { sounds, basePath as soundPath } from "../../path/sounds";
 import { ZundaTalk } from "../../templates/ZundaTalk";
 import { ZundaTalkProps } from "../../schemas/zundaTalkSchema";
 import { Message, Scenario } from "../../schemas/sequenceSchema";
@@ -11,13 +13,15 @@ const newsSource = "";
 const description = "";
 const youtubeTitle = "" + "【ずんだもん解説】";
 console.log('台本', getAIScript(title, description, newsSource));
-console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 console.log('YouTubeタイトル', youtubeTitle);
+console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 
 const scenario: Scenario = require(`./messages/${title}.json`);
 const messages: Message[] = scenario.messages ?? [];
-const backgroundImagePath = "img/bg/office.jpg";
-const bgmPath = "sound/bgm/2_23_AM.mp3";
+const kvTitle = title;
+const kvExt = "png";
+const backgroundImagePath = imagePath + images.bg["1"];
+const bgmPath = soundPath + sounds.bgm["1"];
 export const fps = 30;
 
 // ビルド時点でdurationを確定するため、トップレベルawaitで非同期処理を実行
@@ -32,15 +36,17 @@ export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
       {talks.map((talk) => genVoiceSequence(talk))}
       <img src={staticFile(backgroundImagePath)} alt="bg" style={{}} />
       <img 
-        src={staticFile(`img/misc/${title}.exif`)} 
+        src={staticFile(`img/misc/${kvTitle}.${kvExt}`)} 
         alt="image" 
         style={{ 
           position: "absolute",
           zIndex: 1000,
-          width: "300px",
+          width: "900px",
           top: "50px",
           left: "50%",
           transform: "translate(-50%, 0)",
+          borderRadius: "20px",
+          border: "solid 10px white",
         }} 
       />
       <ZundaTalk talks={talks} />
