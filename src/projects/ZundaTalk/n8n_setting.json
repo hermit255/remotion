@@ -5,13 +5,13 @@
       "parameters": {
         "options": {}
       },
-      "id": "88a42772-8a31-4831-8a14-63d6111aee97",
+      "id": "45bbde78-1e82-4aea-86d4-1f42d423cc47",
       "name": "Split In Batches",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -2192,
-        64
+        -720,
+        288
       ],
       "alwaysOutputData": false
     },
@@ -34,13 +34,13 @@
         },
         "options": {}
       },
-      "id": "0b7cc605-4a66-4126-a2df-3bb07ba93c0e",
+      "id": "fdbba4fa-dc33-4ff4-8bd0-a86bcc499e3f",
       "name": "Audio Query",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1904,
-        96
+        -400,
+        352
       ]
     },
     {
@@ -67,13 +67,13 @@
           }
         }
       },
-      "id": "3216e0c2-810c-4767-96ab-13295d260428",
+      "id": "bff8a1d2-7774-4e0e-b2ce-67b2fe60a016",
       "name": "VoiceVox API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1536,
-        32
+        336,
+        272
       ]
     },
     {
@@ -81,13 +81,13 @@
         "fileName": "=/storage/{{$binary.data.fileName}}",
         "options": {}
       },
-      "id": "f4da27b1-ccd6-4561-8f33-e7a95e12cc10",
+      "id": "769a3f10-eeea-480e-8b9a-ec01027d45e6",
       "name": "ZIPファイル保存",
       "type": "n8n-nodes-base.writeBinaryFile",
       "typeVersion": 1,
       "position": [
-        -1648,
-        -144
+        -48,
+        80
       ]
     },
     {
@@ -96,13 +96,13 @@
         "responseBody": "={{ { \"success\": true, \"message\": \"音声ファイルが生成されました\", \"fileName\": $json.fileName, \"fileCount\": $json.fileCount } }}",
         "options": {}
       },
-      "id": "27263ed8-18ba-4e13-a4d5-36fb350fbb8b",
+      "id": "80af45e5-60e6-4367-9e15-d7956a840ee2",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        -1504,
-        -144
+        96,
+        80
       ]
     },
     {
@@ -114,24 +114,24 @@
       "type": "n8n-nodes-base.compression",
       "typeVersion": 1.1,
       "position": [
-        -1792,
-        -144
+        -192,
+        80
       ],
-      "id": "06fe125f-7e8b-41ab-90ff-ee75cfbb046a",
+      "id": "7eabecd9-a37d-48c3-a1d8-234a44e0c23f",
       "name": "Compression"
     },
     {
       "parameters": {
-        "fileSelector": "/projects/ZundaTalk/messages/20251217.json",
+        "fileSelector": "=/projects/ZundaTalk/messages/{{$data.date}}.json",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        -2784,
-        64
+        -1312,
+        288
       ],
-      "id": "7925a9e9-a041-4ee9-ac28-930f160d60d2",
+      "id": "e8fe0fef-74d1-4671-a4b1-b5d742aa9e09",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -142,10 +142,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -2592,
-        64
+        -1120,
+        288
       ],
-      "id": "f85000bc-4012-4c14-9ab6-7f2c7eb5ce33",
+      "id": "7111e601-c6ca-4e7e-9910-cd2112731167",
       "name": "Extract from File"
     },
     {
@@ -153,10 +153,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -2992,
-        64
+        -1520,
+        288
       ],
-      "id": "08a73ee2-db8b-4c59-988d-7b23f65fa1e8",
+      "id": "d9ef03fd-798b-4cc2-9303-918539324652",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -168,10 +168,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -2384,
-        64
+        -912,
+        288
       ],
-      "id": "3ea21b34-2344-4ca0-b770-fe61308e02c2",
+      "id": "98797d73-1942-4439-bcb0-22684cd20680",
       "name": "Split Out"
     },
     {
@@ -188,10 +188,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        -1920,
-        -144
+        -336,
+        64
       ],
-      "id": "935ed4e5-c89c-4be8-ba89-19160ae80bc8",
+      "id": "79a1d6df-2171-42dd-9015-118dfb7eabaa",
       "name": "Aggregate"
     },
     {
@@ -201,10 +201,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1872,
-        -144
+        -496,
+        64
       ],
-      "id": "f2a4f3ae-5862-4c1a-a5fc-021cff3e4972",
+      "id": "63b1e537-7823-480e-9479-b2c0a81587c0",
       "name": "Rename"
     },
     {
@@ -216,10 +216,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        -1712,
-        -352
+        -32,
+        -128
       ],
-      "id": "c6e47968-b010-4cf3-8888-a7517d959401",
+      "id": "317f1f07-dffb-49b4-b52c-740926c09253",
       "name": "Read/Write Files from Disk1"
     },
     {
@@ -231,14 +231,46 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -1728,
-        32
+        -256,
+        256
       ],
-      "id": "1ccabb96-1d4e-4ae6-8337-b14b8efea09a",
+      "id": "d4ca59d8-e800-485d-afd6-37bf8cda38c0",
       "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1080554c-9743-4ebd-af1e-0fa40adb4657",
+              "name": "speedScale",
+              "value": "={{ $json.speedScale * 1.3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        256
+      ],
+      "id": "0970f120-6041-4eaf-99f5-39cb0b42d927",
+      "name": "Edit Fields"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "date": "20251222"
+        }
+      }
+    ]
+  },
   "connections": {
     "Split In Batches": {
       "main": [
@@ -377,6 +409,17 @@
       "main": [
         [
           {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
             "node": "VoiceVox API",
             "type": "main",
             "index": 0
@@ -389,10 +432,10 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4828edf5-67dc-4eff-b2f0-8564159fc862",
+  "versionId": "b8752117-2ffa-4ef5-9fca-160d63132a04",
   "meta": {
-    "instanceId": "dd53f9774124a6e591e177ff2cfe050724c780dfc6f130596704505ee53e9054"
+    "instanceId": "21614b7f8ba6d061d9202ab19bc2c1fc59a7504c280c189355575d2e43266848"
   },
-  "id": "PcW3HEfxNAI6hRxk",
+  "id": "fc53Y0hNPsulhkpM",
   "tags": []
 }
