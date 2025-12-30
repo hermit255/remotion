@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useCurrentFrame } from "remotion";
 import { Zundamon } from "../Character/Zundamon/Zundamon";
 import { Metan } from "../Character/Metan";
@@ -36,8 +36,8 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
   // それぞれに初期値を設定
   let talkingSpeedZundamon: number = 0;
   let talkingSpeedMetan: number = 0;
-  let emotionZundamon: string | null = null;
-  let emotionMetan: string | null = null;
+  let emotionZundamon: React.RefObject<string | null> = useRef(null);
+  let emotionMetan: React.RefObject<string | null> = useRef(null);
   for (const talk of talks) {
     if (talk.from === undefined || talk.from === null || !talk.durationInFrames) continue;
     let tmpZundamonStyle = currentZundamonStyle as React.CSSProperties;
@@ -47,12 +47,12 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
       if (talk.voice === 3) {
         tmpMetanStyle = { ...currentMetanStyle, ...{filter: "brightness(0.5)"} } as React.CSSProperties;
         talkingSpeedZundamon = 1;
-        emotionZundamon = talk.emotion ?? null;
+        emotionZundamon.current = talk.emotion ?? null;
       } else if (talk.voice === 2) {
       // めたんトーク中
         tmpZundamonStyle = { ...currentZundamonStyle, ...{filter: "brightness(0.5)"} } as React.CSSProperties;
         talkingSpeedMetan = 1;
-        emotionMetan = talk.emotion ?? null;
+        emotionMetan.current = talk.emotion ?? null;
       }
       currentZundamonStyle = { ...tmpZundamonStyle, ...(style?.[talk.key]?.[zunda] || {}) } as React.CSSProperties;
       currentMetanStyle = { ...tmpMetanStyle, ...(style?.[talk.key]?.[metan] || {}) } as React.CSSProperties;
@@ -61,7 +61,7 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
 
   return (
     <>
-      <Zundamon style={currentZundamonStyle} emotion={emotionZundamon || undefined} pose="" lipSync={talkingSpeedZundamon} />
+      <Zundamon style={currentZundamonStyle} emotion={emotionZundamon.current || undefined} pose="" lipSync={talkingSpeedZundamon} />
       <Metan style={currentMetanStyle} />
     </>
   );
