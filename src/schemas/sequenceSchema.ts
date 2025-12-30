@@ -6,6 +6,7 @@ export const messageSchema = z.object({
   voice: z.number(),
   text: z.string(),
   intervalFrame: z.number().optional(),
+  emotion: z.string().optional(),
 });
 
 export const scenarioSchema = z.object({

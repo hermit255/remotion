@@ -87,6 +87,7 @@ export const getTalks = async (messages: Message[], fps: number): Promise<{talks
       durationInFrames: durationInFrames,
       from: startFrame,
       text: data.message.text,
+      emotion: data.message.emotion,
     });
     startFrame += durationInFrames;
   }

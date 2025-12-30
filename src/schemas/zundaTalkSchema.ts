@@ -1,6 +1,6 @@
 import React from "react";
 import { z } from "zod";
-import { messageSchema, talkSchema } from "./sequenceSchema";
+import { talkSchema } from "./sequenceSchema";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義するスキーマ
 // 一般的なCSSプロパティを受け入れる（キーは任意の文字列、値は文字列または数値）
