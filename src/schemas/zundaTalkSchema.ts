@@ -14,7 +14,7 @@ export const characterStyleSchema = z.record(
 export type CharacterStyle = z.infer<typeof characterStyleSchema>;
 
 export const zundaTalkSchema = z.object({
-  messages: z.array(messageSchema),
+  talks: z.array(talkSchema).default([]),
   style: z.record(
     z.string(),
     z.record(z.string(), characterStyleSchema)
@@ -26,5 +26,4 @@ export const zundaTalkSchema = z.object({
 // TypeScript型としてもエクスポート
 export type ZundaTalkProps = z.infer<typeof zundaTalkSchema> & {
   children?: React.ReactNode;
-  talks?: z.infer<typeof talkSchema>[];
 };
