@@ -40,6 +40,13 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+  python:
+    build:
+      dockerfile: docker/python/Dockerfile
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    volumes:
+      - ./python:/app
+    command: python /app/export_layers.py ${TARGET_FILE:?err}
 volumes:
   n8n_data:
   n8n_node_modules:
