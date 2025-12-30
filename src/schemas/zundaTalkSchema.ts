@@ -1,18 +1,14 @@
 import React from "react";
 import { z } from "zod";
-import { messageSchema } from "./sequenceSchema";
+import { messageSchema, talkSchema } from "./sequenceSchema";
 
 // 各SequenceでのZundamonとMetanのスタイルを定義するスキーマ
-export const characterStyleSchema = z.object({
-  position: z.string().optional(),
-  bottom: z.union([z.string(), z.number()]).optional(),
-  left: z.union([z.string(), z.number()]).optional(),
-  right: z.union([z.string(), z.number()]).optional(),
-  height: z.union([z.string(), z.number()]).optional(),
-  filter: z.string().optional(),
-  opacity: z.number().optional(),
-  transform: z.string().optional(),
-});
+// 一般的なCSSプロパティを受け入れる（キーは任意の文字列、値は文字列または数値）
+export const characterStyleSchema = z.record(
+  z.string(),
+  z.union([z.string(), z.number()])
+);
+
 
 // TypeScript型としてもエクスポート
 export type CharacterStyle = z.infer<typeof characterStyleSchema>;
@@ -30,4 +26,5 @@ export const zundaTalkSchema = z.object({
 // TypeScript型としてもエクスポート
 export type ZundaTalkProps = z.infer<typeof zundaTalkSchema> & {
   children?: React.ReactNode;
+  talks?: z.infer<typeof talkSchema>[];
 };

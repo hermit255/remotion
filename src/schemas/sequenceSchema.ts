@@ -23,6 +23,7 @@ export const talkSchema = z.object({
   durationInFrames: z.number().optional(),
   from: z.number().optional(),
   text: z.string(),
+  emotion: z.string().optional(),
 });
 
 // TypeScript型としてもエクスポート
