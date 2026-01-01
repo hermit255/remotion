@@ -12,8 +12,8 @@ const {fontFamily} = loadFont();
 const voicePath: string = "sound/voice/";
 const defaultIntervalFrame: number = 10;
 // Sequenceを生成する関数
-export const genVoiceSequence = (talk: Talk): React.JSX.Element | false => {
-  if (talk.durationInFrames === null) return;
+export const genVoiceSequence = (talk: Talk): React.JSX.Element | null => {
+  if (talk.durationInFrames === null) return null;
   return (
     <Sequence
       key={talk.key + "voice"}
@@ -25,8 +25,8 @@ export const genVoiceSequence = (talk: Talk): React.JSX.Element | false => {
   )
 };
 
-export const genSubtitleSequence = (talk: Talk): React.JSX.Element | false => {
-  if (talk.durationInFrames === null) return;
+export const genSubtitleSequence = (talk: Talk): React.JSX.Element | null => {
+  if (talk.durationInFrames === null) return null;
   return (
     <Sequence
       key={talk.key + "subtitle"}
@@ -41,6 +41,38 @@ export const genSubtitleSequence = (talk: Talk): React.JSX.Element | false => {
           fontSize: "50px", fontWeight: "bold",
           maxWidth: "95%", margin: "0 auto", padding: "10px", borderRadius: "10px",
           fontFamily, color: "white", backgroundColor: "rgb(0, 0, 0, 0.7)"
+        }}>
+          {talk.text}
+        </span>
+      </div>
+    </Sequence>
+  )
+};
+
+export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
+  if (talk.durationInFrames === null) return null;
+
+  let textColor = "white";
+  if (talk.voice === 3) {
+    textColor = "#339933";
+  } else if (talk.voice === 2) {
+    textColor = "#E44175";
+  }
+  return (
+    <Sequence
+      key={talk.key + "subtitle"}
+      from={talk.from}
+      durationInFrames={talk.durationInFrames}
+    >
+      <div style={{
+        position: "absolute", bottom: "1%", left: "15%", width: "70%",
+        display: "flex", justifyContent: "center",
+      }}>
+        <span style={{
+          fontSize: "50px", fontWeight: "bold",
+          textShadow: "1px 1px 0 #FFF, -1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px -1px 0 #FFF, 0px 1px 0 #FFF,  0-1px 0 #FFF, -1px 0 0 #FFF, 1px 0 0 #FFF",
+          maxWidth: "95%", margin: "0 auto", padding: "10px", borderRadius: "10px",
+          fontFamily, color: textColor , backgroundColor: "rgb(255, 255, 255, 0.2)"
         }}>
           {talk.text}
         </span>
