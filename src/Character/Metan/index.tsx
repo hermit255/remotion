@@ -69,12 +69,9 @@ export const Metan: React.FC<MetanProps> = (props: MetanProps) => {
       }
     );
 
-    console.log('state', state);
     return Object.values(state)
       .filter((element): element is LayerMetadata => element !== undefined && element !== null)
       .map((element, index) => {
-        console.log('name', element.name);
-        console.log('el', element);
         const imagePath = (element as any).imagePath;
         if (!imagePath) return null;
         
