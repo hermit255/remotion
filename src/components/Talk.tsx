@@ -6,7 +6,7 @@ import {
   Sequence,
 } from "remotion";
 import { getAudioDurationInSeconds } from "@remotion/media-utils";
-import { Message, Talk } from "../schemas/sequenceSchema";
+import { Message, Talk } from "../util/schema/sequenceSchema";
 
 const {fontFamily} = loadFont(); 
 const voicePath: string = "sound/voice/";

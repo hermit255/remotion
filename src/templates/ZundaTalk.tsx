@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import { useCurrentFrame } from "remotion";
-import { Zundamon } from "../Character/Zundamon/Zundamon";
+import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
-import { ZundaTalkProps, CharacterStyle } from "../schemas/zundaTalkSchema";
+import { ZundaTalkProps, CharacterStyle } from "../util/schema/zundaTalkSchema";
 // import { useJump } from "./hooks/useJump";
 
 // デフォルトのdurationInFrames（音声ファイルが読み込まれるまでの暫定値）
