@@ -31,8 +31,6 @@ const stateDefault = {
   complexion: modMetaData['顔色']?.children?.['ほっぺ'],
   mouth: modMetaData['口']?.children?.['むふ'],
 }
-const state = {...stateDefault};
-console.log(stateDefault);
 
 export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   style?: React.CSSProperties;
@@ -43,10 +41,12 @@ export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement>
 
 export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
   const frame = useCurrentFrame();
+  const { lipSync, emotion, pose, ...domProps } = props;
   
   // stateの各要素をdomとして出力する関数（useMemoでメモ化）
   const images = useMemo((): React.JSX.Element[] => {
-    if (props.emotion === 'smile') {
+    const state = {...stateDefault};
+    if (emotion === 'smile') {
       state.singleEye = modMetaData['目']?.children?.['にっこり'];
       state.blackEye = null;
       state.whiteEye = null;
@@ -60,7 +60,7 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     // lipsyncが数値なら口パクを行う（ほあーとむふを不規則に繰り返す）
     applyLipsync(
       frame,
-      props.lipSync,
+      lipSync,
       () => {
         // 口を開いている状態を作るcallback
         state.mouth = modMetaData['口']?.children?.['ほあー'];
@@ -91,10 +91,10 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
         );
       })
       .filter((element): element is React.JSX.Element => element !== null);
-  }, [props.emotion, props.pose, props.lipSync, frame]); // frameとlipSyncを依存配列に追加
+  }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
 
   return (
-    <div className="zundamon" {...props}>
+    <div className="zundamon" {...domProps}>
       {images}
     </div>
   );

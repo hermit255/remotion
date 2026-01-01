@@ -12,17 +12,24 @@ const METAN = "metan";
 // デフォルトのスタイル
 const defaultZundamonStyle: CharacterStyle = {
   position: "absolute",
-  bottom: "0",
-  left: "0",
-  width: "800px",
-  height: "800px",
+  // bottom: "0",
+  // left: "0",
+  top: "103%",           /* 親の高さ50%の位置に配置 */
+  left: "23%",          /* 親の幅50%の位置に配置 */
+  transform: "translate(-50%, -50%)", /* 自身の幅・高さの半分だけ戻す */
+  width: "1082px",
+  height: "1650px",
 };
 
 const defaultMetanStyle: CharacterStyle = {
   position: "absolute",
-  bottom: "0",
-  right: "0",
-  height: "800px",
+  // bottom: "-1000px",
+  // right: "-300px",
+  top: "113%",           /* 親の高さ50%の位置に配置 */
+  right: "-61%",          /* 親の幅50%の位置に配置 */
+  transform: "translate(-50%, -50%)", /* 自身の幅・高さの半分だけ戻す */
+  width: "1082px",
+  height: "1820px",
 };
 
 export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX.Element => {
@@ -62,7 +69,7 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
   return (
     <>
       <Zundamon style={currentZundamonStyle} emotion={emotionZundamon.current || undefined} pose="" lipSync={talkingSpeedZundamon} />
-      <Metan style={currentMetanStyle} />
+      <Metan style={currentMetanStyle} emotion={emotionMetan.current || undefined} pose="" lipSync={talkingSpeedMetan}  />
     </>
   );
 };

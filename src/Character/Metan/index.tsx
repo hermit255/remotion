@@ -3,11 +3,11 @@ import {
   useCurrentFrame,
 } from "remotion";
 import { metadataSchema, processMetadata, type LayerMetadata, type Metadata } from "../../util/Psd";
-import type { ZundamonMetadata } from "./types";
+import type { MetanMetadata } from "./types";
 import { applyLipsync } from "../lipsync";
 
-const basePath = "img/characters/Zundamon/";
-const scale = 0.5;
+const basePath = "img/characters/Metan/";
+const scale = 0.43;
 const partsStyleBase: React.CSSProperties = {
   position: 'absolute',
   scale: scale,
@@ -17,53 +17,51 @@ const metadataJson = require("./metadata.json");
 const metaData: Metadata = metadataSchema.parse(metadataJson);
 
 // metaDataの各要素およびchildrenに対してconvertChildrenを再帰的に適用
-const modMetaData = processMetadata(metaData, basePath) as ZundamonMetadata;
+const modMetaData = processMetadata(metaData, basePath) as MetanMetadata;
 
 const stateDefault = {
-  body: modMetaData['服装1']?.children?.['いつもの服'],
-  edamame: modMetaData['枝豆']?.children?.['枝豆通常'],
-  rightArm: modMetaData['服装1']?.children?.['右腕']?.children?.['基本'],
-  leftArm: modMetaData['服装1']?.children?.['左腕']?.children?.['基本'],
+  hairAccessory_1: modMetaData['頭部アクセサリ']?.children?.['ヘッドドレス'],
+  hairAccessory_2: modMetaData['頭部アクセサリ']?.children?.['髪留めハート'],
+  rightDril: modMetaData['ツインドリル右'],
+  leftDril: modMetaData['ツインドリル左'],
+  body: modMetaData['白ロリ服']?.children?.['体'],
+  rightArm: modMetaData['白ロリ服']?.children?.['右腕']?.children?.['指差す'],
+  leftArm: modMetaData['白ロリ服']?.children?.['左腕']?.children?.['マイク'],
+  frontHair: modMetaData['前髪もみあげ'],
+  eyebrow: modMetaData['眉']?.children?.['太眉ごきげん'],
   whiteEye: modMetaData['目']?.children?.['目セット']?.children?.['普通白目'],
-  blackEye: modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['普通目'],
+  blackEye: modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['カメラ目線'],
   singleEye: null,
-  eyebrow: modMetaData['眉']?.children?.['眉'],
-  complexion: modMetaData['顔色']?.children?.['ほっぺ'],
-  mouth: modMetaData['口']?.children?.['むふ'],
+  mouth: modMetaData['口']?.children?.['ほほえみ'],
+  complexion: modMetaData['顔色']?.children?.['普通2'],
 }
-const state = {...stateDefault};
-console.log(stateDefault);
 
-export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface MetanProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   style?: React.CSSProperties;
   emotion?: string;
   pose?: string;
   lipSync?: number;
 }
 
-export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
+export const Metan: React.FC<MetanProps> = (props: MetanProps) => {
   const frame = useCurrentFrame();
+  const { lipSync, emotion, pose, ...domProps } = props;
   
   // stateの各要素をdomとして出力する関数（useMemoでメモ化）
   const images = useMemo((): React.JSX.Element[] => {
-    if (props.emotion === 'smile') {
-      state.singleEye = modMetaData['目']?.children?.['にっこり'];
-      state.blackEye = null;
-      state.whiteEye = null;
-    } else {
-      state.singleEye = stateDefault.singleEye;
-      state.blackEye = stateDefault.blackEye;
-      state.whiteEye = stateDefault.whiteEye;
+    const state = {...stateDefault};
+    // Metanにはsmile用の特別な目のパーツがないため、通常の目を使用
+    state.singleEye = stateDefault.singleEye;
+    state.blackEye = stateDefault.blackEye;
+    state.whiteEye = stateDefault.whiteEye;
 
-    }
-
-    // lipsyncが数値なら口パクを行う（ほあーとむふを不規則に繰り返す）
+    // lipsyncが数値なら口パクを行う（うえーとわあーを不規則に繰り返す）
     applyLipsync(
       frame,
-      props.lipSync,
+      lipSync,
       () => {
         // 口を開いている状態を作るcallback
-        state.mouth = modMetaData['口']?.children?.['ほあー'];
+        state.mouth = modMetaData['口']?.children?.['わあー'];
       },
       () => {
         // 口を閉じている状態を作るcallback
@@ -71,9 +69,12 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
       }
     );
 
+    console.log('state', state);
     return Object.values(state)
       .filter((element): element is LayerMetadata => element !== undefined && element !== null)
       .map((element, index) => {
+        console.log('name', element.name);
+        console.log('el', element);
         const imagePath = (element as any).imagePath;
         if (!imagePath) return null;
         
@@ -91,10 +92,10 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
         );
       })
       .filter((element): element is React.JSX.Element => element !== null);
-  }, [props.emotion, props.pose, props.lipSync, frame]); // frameとlipSyncを依存配列に追加
+  }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
 
   return (
-    <div className="zundamon" {...props}>
+    <div className="metan" {...domProps}>
       {images}
     </div>
   );

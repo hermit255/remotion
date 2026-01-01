@@ -110,6 +110,13 @@ export const processMetadata = (
       partCopy.children = childrenObj as any;
       // 再帰的にchildrenを処理
       processChildrenRecursively(part.children, childrenObj, [partName], basePath);
+    } else {
+      // childrenがない場合（画像ファイル）のimagePathを設定
+      if (!part.is_group) {
+        partCopy.imagePath = staticFile(
+          basePath + partName + ".png"
+        ) as string;
+      }
     }
     return acc;
   }, {} as Record<string, LayerMetadata>);
