@@ -52,12 +52,12 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
     if (frame >= talk.from && frame < talk.from + talk.durationInFrames) {
       // ずんだもんトーク中
       if (talk.voice === 3) {
-        tmpMetanStyle = { ...currentMetanStyle, ...{filter: "brightness(0.5)"} } as React.CSSProperties;
+        tmpMetanStyle = { ...currentMetanStyle } as React.CSSProperties;
         talkingSpeedZundamon = 1;
         emotionZundamon.current = talk.emotion ?? null;
       } else if (talk.voice === 2) {
       // めたんトーク中
-        tmpZundamonStyle = { ...currentZundamonStyle, ...{filter: "brightness(0.5)"} } as React.CSSProperties;
+        tmpZundamonStyle = { ...currentZundamonStyle } as React.CSSProperties;
         talkingSpeedMetan = 1;
         emotionMetan.current = talk.emotion ?? null;
       }
