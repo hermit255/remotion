@@ -3,8 +3,8 @@ import { staticFile, Html5Audio, AbsoluteFill } from "remotion";
 import { images, basePath as imagePath } from "../../path/images";
 import { sounds, basePath as soundPath } from "../../path/sounds";
 import { ZundaTalk } from "../../templates/ZundaTalk";
-import { ZundaTalkProps } from "../../schemas/zundaTalkSchema";
-import { Message, Scenario } from "../../schemas/sequenceSchema";
+import { ZundaTalkProps } from "../../util/schema/zundaTalkSchema";
+import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
@@ -16,7 +16,20 @@ console.log('台本', getAIScript(title, description, newsSource));
 console.log('YouTubeタイトル', youtubeTitle);
 console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 
-const scenario: Scenario = require(`./messages/${title}.json`);
+// JSONファイルを安全に読み込む
+let scenarioData: unknown;
+try {
+  scenarioData = require(`./messages/${title}.json`);
+} catch (error) {
+  console.warn(`Failed to load scenario file: ./messages/${title}.json`, error);
+  scenarioData = null;
+}
+
+// scenarioが空やnullの場合の安全な処理
+const scenario: Scenario = scenarioData && typeof scenarioData === 'object' && 'messages' in scenarioData
+  ? (scenarioData as Scenario)
+  : { title: '', description: '', messages: [] };
+
 const messages: Message[] = scenario.messages ?? [];
 const kvTitle = title;
 const kvExt = "png";
@@ -27,7 +40,7 @@ export const fps = 30;
 // ビルド時点でdurationを確定するため、トップレベルawaitで非同期処理を実行
 const {talks, totalDurationInFrames} = await getTalks(messages, fps);
 
-export const duration = totalDurationInFrames;
+export const duration = totalDurationInFrames || 1;
 
 export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
   return (
