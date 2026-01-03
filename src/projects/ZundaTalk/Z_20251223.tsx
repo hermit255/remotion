@@ -8,10 +8,10 @@ import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
-const title = "20251221";
-const newsSource = "https://news.yahoo.co.jp/articles/adb7f436caf1b8f7ce390ae9676252a45cd8f41c";
-const description = "「酒じゃないから健康的」は誤解…「ノンアルコールビール」飲み過ぎが招く“健康リスク”とは【糖尿病専門医が解説】";
-const youtubeTitle = "ノンアルコールビールはいくら飲んでも大丈夫？" + "【ずんだもん解説】";
+const title = "20251223";
+const newsSource = "https://news.denfaminicogamer.jp/news/251223x";
+const description = "国産サメ映画『温泉シャーク2』サメの数が増えすぎて“被害者”が足りなくなる。「悲鳴ドナー」として断末魔などを公募開始";
+const youtubeTitle = "サメの数が増えすぎて“被害者”が足りなくなる" + "【ずんだもん解説】";
 console.log('台本', getAIScript(title, description, newsSource));
 console.log('YouTubeタイトル', youtubeTitle);
 console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
@@ -41,7 +41,7 @@ export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
         style={{ 
           position: "absolute",
           zIndex: 1000,
-          width: "900px",
+          width: "500px",
           top: "50px",
           left: "50%",
           transform: "translate(-50%, 0)",

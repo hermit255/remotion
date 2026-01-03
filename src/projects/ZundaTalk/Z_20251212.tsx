@@ -1,8 +1,8 @@
 import React from "react";
 import { staticFile } from "remotion";
 import { ZundaTalkV2 } from "../../templates/ZundaTalkV2";
-import { ZundaTalkProps } from "../../schemas/zundaTalkSchema";
-import { Message, Scenario } from "../../schemas/sequenceSchema";
+import { ZundaTalkProps } from "../../util/schema/zundaTalkSchema";
+import { Message, Scenario } from "../../util/schema/sequenceSchema";
 
 /*
  * 台本

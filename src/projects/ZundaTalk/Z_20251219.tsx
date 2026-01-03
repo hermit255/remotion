@@ -3,8 +3,8 @@ import { staticFile, Html5Audio, AbsoluteFill } from "remotion";
 import { images, basePath as imagePath } from "../../path/images";
 import { sounds, basePath as soundPath } from "../../path/sounds";
 import { ZundaTalk } from "../../templates/ZundaTalk";
-import { ZundaTalkProps } from "../../schemas/zundaTalkSchema";
-import { Message, Scenario } from "../../schemas/sequenceSchema";
+import { ZundaTalkProps } from "../../util/schema/zundaTalkSchema";
+import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 

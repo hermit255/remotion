@@ -8,10 +8,10 @@ import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
-const title = "20251221";
-const newsSource = "https://news.yahoo.co.jp/articles/adb7f436caf1b8f7ce390ae9676252a45cd8f41c";
-const description = "「酒じゃないから健康的」は誤解…「ノンアルコールビール」飲み過ぎが招く“健康リスク”とは【糖尿病専門医が解説】";
-const youtubeTitle = "ノンアルコールビールはいくら飲んでも大丈夫？" + "【ずんだもん解説】";
+const title = "20251229";
+const newsSource = "https://news.yahoo.co.jp/articles/9855c1a7c51a34f016303a08a0ef25efa67ae87a";
+const description = "生成AIで就活生のエントリーシートが均質化？　書類選考の廃止続々";
+const youtubeTitle = "生成AIを警戒して書類選考の廃止続々" + "【ずんだもん解説】";
 console.log('台本', getAIScript(title, description, newsSource));
 console.log('YouTubeタイトル', youtubeTitle);
 console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
@@ -19,7 +19,7 @@ console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 const scenario: Scenario = require(`./messages/${title}.json`);
 const messages: Message[] = scenario.messages ?? [];
 const kvTitle = title;
-const kvExt = "jpg";
+const kvExt = "webp";
 const backgroundImagePath = imagePath + images.bg["1"];
 const bgmPath = soundPath + sounds.bgm["1"];
 export const fps = 30;
@@ -42,7 +42,7 @@ export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
           position: "absolute",
           zIndex: 1000,
           width: "900px",
-          top: "50px",
+          top: "100px",
           left: "50%",
           transform: "translate(-50%, 0)",
           borderRadius: "20px",

@@ -8,18 +8,31 @@ import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
-const title = "20251221";
-const newsSource = "https://news.yahoo.co.jp/articles/adb7f436caf1b8f7ce390ae9676252a45cd8f41c";
-const description = "「酒じゃないから健康的」は誤解…「ノンアルコールビール」飲み過ぎが招く“健康リスク”とは【糖尿病専門医が解説】";
-const youtubeTitle = "ノンアルコールビールはいくら飲んでも大丈夫？" + "【ずんだもん解説】";
+const title = "20260104";
+const newsSource = "";
+const description = "";
+const youtubeTitle = "" + "【ずんだもん解説】";
 console.log('台本', getAIScript(title, description, newsSource));
 console.log('YouTubeタイトル', youtubeTitle);
 console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 
-const scenario: Scenario = require(`./messages/${title}.json`);
+// JSONファイルを安全に読み込む
+let scenarioData: unknown;
+try {
+  scenarioData = require(`./messages/${title}.json`);
+} catch (error) {
+  console.warn(`Failed to load scenario file: ./messages/${title}.json`, error);
+  scenarioData = null;
+}
+
+// scenarioが空やnullの場合の安全な処理
+const scenario: Scenario = scenarioData && typeof scenarioData === 'object' && 'messages' in scenarioData
+  ? (scenarioData as Scenario)
+  : { title: '', description: '', messages: [] };
+
 const messages: Message[] = scenario.messages ?? [];
 const kvTitle = title;
-const kvExt = "jpg";
+const kvExt = "png";
 const backgroundImagePath = imagePath + images.bg["1"];
 const bgmPath = soundPath + sounds.bgm["1"];
 export const fps = 30;
@@ -27,7 +40,7 @@ export const fps = 30;
 // ビルド時点でdurationを確定するため、トップレベルawaitで非同期処理を実行
 const {talks, totalDurationInFrames} = await getTalks(messages, fps);
 
-export const duration = totalDurationInFrames;
+export const duration = totalDurationInFrames || 1;
 
 export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
   return (
