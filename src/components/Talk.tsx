@@ -71,8 +71,10 @@ export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
         <span style={{
           fontSize: "50px", fontWeight: "bold",
           textShadow: "1px 1px 0 #FFF, -1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px -1px 0 #FFF, 0px 1px 0 #FFF,  0-1px 0 #FFF, -1px 0 0 #FFF, 1px 0 0 #FFF",
-          maxWidth: "95%", margin: "0 auto", padding: "10px", borderRadius: "10px",
-          fontFamily, color: textColor , backgroundColor: "rgb(255, 255, 255, 0.2)"
+          maxWidth: "95%", padding: "10px 30px", borderRadius: "10px",
+          fontFamily, color: textColor,
+          whiteSpace: "pre-wrap",
+          // backgroundColor: "rgb(255, 255, 255, 0.2)"
         }}>
           {talk.text}
         </span>
