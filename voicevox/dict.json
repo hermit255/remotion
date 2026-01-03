@@ -1,0 +1,53 @@
+{
+  "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": {
+    "surface": "VOICEVOX",
+    "priority": 5,
+    "context_id": 1348,
+    "part_of_speech": "名詞",
+    "part_of_speech_detail_1": "固有名詞",
+    "part_of_speech_detail_2": "一般",
+    "part_of_speech_detail_3": "*",
+    "inflectional_type": "*",
+    "inflectional_form": "*",
+    "stem": "*",
+    "yomi": "ボイスボックス",
+    "pronunciation": "ボイスボックス",
+    "accent_type": 1,
+    "mora_count": 6,
+    "accent_associative_rule": "*"
+  },
+  "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e": {
+    "surface": "Remotion",
+    "priority": 5,
+    "context_id": 1348,
+    "part_of_speech": "名詞",
+    "part_of_speech_detail_1": "固有名詞",
+    "part_of_speech_detail_2": "一般",
+    "part_of_speech_detail_3": "*",
+    "inflectional_type": "*",
+    "inflectional_form": "*",
+    "stem": "*",
+    "yomi": "リモーション",
+    "pronunciation": "リモーション",
+    "accent_type": 2,
+    "mora_count": 5,
+    "accent_associative_rule": "*"
+  },
+  "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f": {
+    "surface": "gmail",
+    "priority": 5,
+    "context_id": 1348,
+    "part_of_speech": "名詞",
+    "part_of_speech_detail_1": "固有名詞",
+    "part_of_speech_detail_2": "一般",
+    "part_of_speech_detail_3": "*",
+    "inflectional_type": "*",
+    "inflectional_form": "*",
+    "stem": "*",
+    "yomi": "ジーメール",
+    "pronunciation": "ジーメール",
+    "accent_type": 0,
+    "mora_count": 4,
+    "accent_associative_rule": "*"
+  }
+}

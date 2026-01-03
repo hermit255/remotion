@@ -7,7 +7,6 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      # - app_node_modules:/app/node_modules
     command: sh -c "npm install && npm run dev"
   n8n:
     image: docker.n8n.io/n8nio/n8n:1.121.3
@@ -29,10 +28,18 @@ services:
       NODE_FUNCTION_ALLOW_EXTERNAL: '*'
       GENERIC_TIMEZONE: 'Asia/Tokyo'
       TZ: 'Asia/Tokyo'
-  voice-box:
-    image: voicevox/voicevox_engine:nvidia-latest
+  voicevox:
+    build:
+      context: .
+      dockerfile: docker/voicevox/Dockerfile
     ports:
       - 50021:50021
+    volumes:
+      # 初期辞書ファイル（読み取り専用）
+      - ./voicevox/dict.json:/app/dict.json:ro
+      # インポートした辞書データを保存するvolume
+      - voicevox_user_dict:/app/user_dict
+    command: ["gosu", "user", "/opt/voicevox_engine/run", "--use_gpu", "--host", "0.0.0.0"]
     deploy:
       resources:
         reservations:
@@ -40,14 +47,21 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-  python:
-    build:
-      dockerfile: docker/python/Dockerfile
-    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    volumes:
-      - ./python:/app
-    command: python /app/export_layers.py ${TARGET_FILE:?err}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:50021/speakers || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  # python:
+  #   build:
+  #     dockerfile: docker/python/Dockerfile
+  #   user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+  #   volumes:
+  #     - ./python:/app
+  #   command: python /app/export_layers.py ${TARGET_FILE:?err}
 volumes:
   n8n_data:
   n8n_node_modules:
   app_node_modules:
+  voicevox_user_dict:
