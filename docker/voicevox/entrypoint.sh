@@ -83,31 +83,8 @@ register_dictionary() {
   fi
 }
 
-# 辞書を登録（優先順位: volumeに保存した辞書 > 初期辞書ファイル）
-DICT_REGISTERED=false
-
-# 1. volumeに保存した辞書データを優先的に読み込む
-if [ -d /app/user_dict ]; then
-  # exported_dict.json を優先的に探す
-  if [ -f /app/user_dict/exported_dict.json ]; then
-    if register_dictionary /app/user_dict/exported_dict.json "/app/user_dict/exported_dict.json"; then
-      DICT_REGISTERED=true
-    fi
-  else
-    # exported_dict.jsonがない場合、他のjsonファイルを探す
-    for dict_file in /app/user_dict/*.json; do
-      if [ -f "$dict_file" ]; then
-        if register_dictionary "$dict_file" "$dict_file"; then
-          DICT_REGISTERED=true
-          break
-        fi
-      fi
-    done
-  fi
-fi
-
-# 2. volumeに辞書がない場合、初期辞書ファイルを読み込む
-if [ "$DICT_REGISTERED" = "false" ] && [ -f /app/dict.json ]; then
+# volumeに辞書がない場合、初期辞書ファイルを読み込む
+if [ -f /app/dict.json ]; then
   register_dictionary /app/dict.json "/app/dict.json"
 fi
 

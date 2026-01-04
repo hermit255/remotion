@@ -36,9 +36,7 @@ services:
       - 50021:50021
     volumes:
       # 初期辞書ファイル（読み取り専用）
-      - ./voicevox/dict.json:/app/dict.json:ro
-      # インポートした辞書データを保存するvolume
-      - voicevox_user_dict:/app/user_dict
+      - ./voicevox/dict.json:/app/dict.json
     command: ["gosu", "user", "/opt/voicevox_engine/run", "--use_gpu", "--host", "0.0.0.0"]
     deploy:
       resources:
@@ -64,4 +62,3 @@ volumes:
   n8n_data:
   n8n_node_modules:
   app_node_modules:
-  voicevox_user_dict:
