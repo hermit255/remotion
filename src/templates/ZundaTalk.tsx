@@ -15,7 +15,7 @@ const defaultZundamonStyle: CharacterStyle = {
   // bottom: "0",
   // left: "0",
   top: "103%",           /* 親の高さ50%の位置に配置 */
-  left: "22%",          /* 親の幅50%の位置に配置 */
+  left: "-5%",          /* 親の幅50%の位置に配置 */
   transform: "translate(-50%, -50%)", /* 自身の幅・高さの半分だけ戻す */
   width: "1082px",
   height: "1650px",
@@ -68,8 +68,18 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
 
   return (
     <>
-      <Zundamon style={currentZundamonStyle} emotion={emotionZundamon.current || undefined} pose="" lipSync={talkingSpeedZundamon} />
-      <Metan style={currentMetanStyle} emotion={emotionMetan.current || undefined} pose="" lipSync={talkingSpeedMetan}  />
+      <Zundamon
+        style={currentZundamonStyle}
+        emotion={emotionZundamon.current || undefined}
+        pose="" lipSync={talkingSpeedZundamon}
+        flipHorizontal={true}
+        />
+      <Metan
+        style={currentMetanStyle}
+        emotion={emotionMetan.current || undefined} pose=""
+        lipSync={talkingSpeedMetan}
+        flipHorizontal={false}
+        />
     </>
   );
 };

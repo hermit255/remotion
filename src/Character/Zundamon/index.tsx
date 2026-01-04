@@ -10,7 +10,7 @@ const basePath = "img/characters/Zundamon/";
 const scale = 0.5;
 const partsStyleBase: React.CSSProperties = {
   position: 'absolute',
-  scale: scale,
+  transform: `scale(${scale})`,
   transformOrigin: 'top left',
 };
 const metadataJson = require("./metadata.json");
@@ -37,11 +37,12 @@ export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement>
   emotion?: string;
   pose?: string;
   lipSync?: number;
+  flipHorizontal?: boolean;
 }
 
 export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
   const frame = useCurrentFrame();
-  const { lipSync, emotion, pose, ...domProps } = props;
+  const { lipSync, emotion, pose, flipHorizontal, style, ...domProps } = props;
   
   // stateの各要素をdomとして出力する関数（useMemoでメモ化）
   const images = useMemo((): React.JSX.Element[] => {
@@ -93,8 +94,17 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
       .filter((element): element is React.JSX.Element => element !== null);
   }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
 
+  const containerStyle: React.CSSProperties = {
+    ...style,
+    ...(flipHorizontal && {
+      transform: style?.transform 
+        ? `${style.transform} scaleX(-1)`
+        : 'scaleX(-1)',
+    }),
+  };
+
   return (
-    <div className="zundamon" {...domProps}>
+    <div className="zundamon" {...domProps} style={containerStyle}>
       {images}
     </div>
   );

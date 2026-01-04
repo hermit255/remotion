@@ -10,7 +10,7 @@ const basePath = "img/characters/Metan/";
 const scale = 0.43;
 const partsStyleBase: React.CSSProperties = {
   position: 'absolute',
-  scale: scale,
+  transform: `scale(${scale})`,
   transformOrigin: 'top left',
 };
 const metadataJson = require("./metadata.json");
@@ -41,11 +41,12 @@ export interface MetanProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   emotion?: string;
   pose?: string;
   lipSync?: number;
+  flipHorizontal?: boolean;
 }
 
 export const Metan: React.FC<MetanProps> = (props: MetanProps) => {
   const frame = useCurrentFrame();
-  const { lipSync, emotion, pose, ...domProps } = props;
+  const { lipSync, emotion, pose, flipHorizontal, style, ...domProps } = props;
   
   // stateの各要素をdomとして出力する関数（useMemoでメモ化）
   const images = useMemo((): React.JSX.Element[] => {
@@ -91,8 +92,17 @@ export const Metan: React.FC<MetanProps> = (props: MetanProps) => {
       .filter((element): element is React.JSX.Element => element !== null);
   }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
 
+  const containerStyle: React.CSSProperties = {
+    ...style,
+    ...(flipHorizontal && {
+      transform: style?.transform 
+        ? `${style.transform} scaleX(-1)`
+        : 'scaleX(-1)',
+    }),
+  };
+
   return (
-    <div className="metan" {...domProps}>
+    <div className="metan" {...domProps} style={containerStyle}>
       {images}
     </div>
   );

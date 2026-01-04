@@ -65,7 +65,7 @@ export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
       durationInFrames={talk.durationInFrames}
     >
       <div style={{
-        position: "absolute", bottom: "1%", left: "15%", width: "70%",
+        position: "absolute", top: "83%", left: "15%", width: "70%",
         display: "flex", justifyContent: "center",
       }}>
         <span style={{
@@ -74,6 +74,7 @@ export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
           maxWidth: "95%", padding: "10px 30px", borderRadius: "10px",
           fontFamily, color: textColor,
           whiteSpace: "pre-wrap",
+          zIndex: 1000,
           // backgroundColor: "rgb(255, 255, 255, 0.2)"
         }}>
           {talk.text}
