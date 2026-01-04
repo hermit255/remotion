@@ -5,7 +5,7 @@ import { sounds, basePath as soundPath } from "../../path/sounds";
 import { ZundaTalk } from "../../templates/ZundaTalk";
 import { ZundaTalkProps } from "../../util/schema/zundaTalkSchema";
 import { Message, Scenario } from "../../util/schema/sequenceSchema";
-import { genVoiceSequence, genSubtitleSequence, getTalks } from "../../components/Talk";
+import { genVoiceSequence, genSubtitleSequenceV2, getTalks } from "../../components/Talk";
 import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
 const title = "2025mmdd";
@@ -63,7 +63,7 @@ export const ZundaMetanTalk = (_props: ZundaTalkProps): React.JSX.Element => {
         }} 
       />
       <ZundaTalk talks={talks} />
-      {talks.map((talk) => genSubtitleSequence(talk))}
+      {talks.map((talk) => genSubtitleSequenceV2(talk))}
     </AbsoluteFill>
   );
 };
