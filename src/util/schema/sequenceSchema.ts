@@ -11,7 +11,9 @@ export const messageSchema = z.object({
 
 export const scenarioSchema = z.object({
   title: z.string(),
+  newsSource: z.string(),
   description: z.string(),
+  youtubeTitle: z.string(),
   messages: z.array(messageSchema),
 });
 
