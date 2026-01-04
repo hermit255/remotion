@@ -1,0 +1,204 @@
+{
+  "name": "post_video_to_youtube",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Extract from File').item.json.data.youtubeTitle }}",
+        "regionCode": "JP",
+        "categoryId": "25",
+        "options": {
+          "description": "▼この動画について▼ 以下のニュースをテーマとした解説動画です 【箱根駅伝】ポメラニアン乱入の当事者が明かす本音「犬に罪はない」国学院野中「崩れたの事実」 https://news.yahoo.co.jp/articles/25aa868e9cba98920eddb5b0cc8f0a0fc175e4c0  ▼著作権について▼ 動画内で使用している画像の著作権は全て権利所有者様に帰属します。  ▼お借りしている素材▼ VOICEVOX:ずんだもん VOICEVOX:四国めたん 立ち絵(坂本アヒル様)：https://twitter.com/sakamoto_ahr みんちりえ様：https://min-chi.material.jp/ しゃろう様：https://www.dova-s.jp/",
+          "notifySubscribers": true,
+          "privacyStatus": "private",
+          "publishAt": "2026-01-04T19:00:00",
+          "selfDeclaredMadeForKids": false
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        608,
+        0
+      ],
+      "id": "ceb9a70b-fcb2-451a-a489-d0771ac6bb21",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "nPEN18XYKQ34r5Yl",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/remotion/out/{{ $json.data.title }}.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        320,
+        0
+      ],
+      "id": "976cc74f-02ec-431c-aa13-0a4773ae6719",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.binary.data.mimeType = 'video/mp4';\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        0
+      ],
+      "id": "de6855ec-0aaf-44e3-b65e-bf115a17da2f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "5aeb77a2-e54b-4044-99d0-787abde1b90d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "380a182c-b1bd-43b1-a159-1752a36cba5e",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f8abd1b9-564b-40fa-8b9d-005b87886657",
+              "name": "date",
+              "value": "20260104",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "abb856b9-3676-4774-b4a4-7d674332a18d",
+      "name": "input date"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/remotion/projects/ZundaTalk/messages/{{$data.date}}.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "8394acc6-c7a0-4f04-8592-eacd09784b37",
+      "name": "Read/Write Files from Disk2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "input date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input date": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4eb2ce30-47eb-4035-b8eb-5b7ef4396e8d",
+  "meta": {
+    "instanceId": "21614b7f8ba6d061d9202ab19bc2c1fc59a7504c280c189355575d2e43266848"
+  },
+  "id": "ABDBBYmIpD8NV8OR",
+  "tags": []
+}

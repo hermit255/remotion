@@ -15,8 +15,9 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_node_modules:/home/node/node_modules
-      - ./src/projects:/projects #ホストでpermissionsを777にしておく
-      - ./public:/public #ホストでpermissionsを777にしておく
+      - ./src/projects:/remotion/projects #ホストでpermissionsを777にしておく
+      - ./public:/remotion/public #ホストでpermissionsを777にしておく
+      - ./out:/remotion/out
     stdin_open: true
     tty: true
     environment:

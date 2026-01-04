@@ -1,0 +1,531 @@
+{
+  "name": "gen_voices_from_messages",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8fd3341e-381f-4065-b866-a241179cec9e",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        256
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://voicevox:50021/audio_query",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "speaker",
+              "value": "={{ $json['data.messages'].voice || '2' }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json['data.messages'].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6e4f4edd-9c41-4f55-b05e-328c06b77c2f",
+      "name": "Audio Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://voicevox:50021/synthesis",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "speaker",
+              "value": "={{ $('Split In Batches').item.json['data.messages'].voice }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "d427b16e-8fc8-439f-b23a-2f3ace2d8b9d",
+      "name": "VoiceVox API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/remotion/projects/ZundaTalk/messages/{{$data.date}}.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        256
+      ],
+      "id": "8bce6f52-2359-4943-a378-c91ada6fb19e",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -496,
+        256
+      ],
+      "id": "d9a848bd-9dfe-4742-ba9e-78483a8d8b06",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        256
+      ],
+      "id": "0b5a72fa-4839-4924-b4a4-6205cfea51b0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.messages",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        256
+      ],
+      "id": "27704c78-fe5e-4cc1-a90b-450be0110d16",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1080554c-9743-4ebd-af1e-0fa40adb4657",
+              "name": "speedScale",
+              "value": "={{ $json.speedScale * 1.4 }}",
+              "type": "number"
+            },
+            {
+              "id": "3e2f5b53-d253-4d60-bd07-421090bc25b3",
+              "name": "volumeScale",
+              "value": "={{ $json.volumeScale * 2.3 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        464
+      ],
+      "id": "22f4bc73-4ff4-4cd7-83f8-0196981d7955",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/remotion/public/sound/voice/{{ $('Split In Batches').item.json['data.messages'].fileName }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        368,
+        464
+      ],
+      "id": "aea888fd-2b8d-4909-8ada-32da3169f37d",
+      "name": "Read/Write Files from Disk2"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp-image-generation",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp-image-generation"
+        },
+        "prompt": "犬がマラソンに乱入してきたイメージのYoutubeサムネイルを作って",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        0
+      ],
+      "id": "4f18f90f-3bb2-41e3-9608-1af72d3afbe3",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "# 台本\n## 要件\n台本を踏まえて、以下の出力要領でYoutubeのずんだもん動画として使う会話を出力してほしい(titleは台本で指定)\n\n- {key}は{title}_{index+1}の規則で出力される\n- {fileName}は{key}.wavの規則で出力される\n\n```json\n{\n    \"title\": \"sample\",\n    \"description\": \"日本語のタイトル\",\n    \"messages\": [\n        {\n          \"key\": \"sample_1\",\n          \"fileName\": \"sample_1.wav\",\n          \"voice\": 3,\n          \"text\": \"こんにちは、僕はずんだもんなのだ\",\n          \"emotion\": \"normal\"\n        },\n        {\n          \"key\": \"sample_2\",\n          \"fileName\": \"sample_2.wav\",\n          \"voice\": 2,\n          \"text\": \"こんにちは、私は四国めたんなのだ\",\n          \"emotion\": \"normal\"\n        },\n        {\n          \"key\": \"sample_3\",\n          \"fileName\": \"sample_3.wav\",\n          \"voice\": 3,\n          \"text\": \"めたん、語尾が間違ってるのだ。\",\n          \"emotion\": \"normal\",\n          \"continue\": 1\n        },\n        {\n          \"key\": \"sample_4\",\n          \"fileName\": \"sample_4.wav\",\n          \"voice\": 3,\n          \"text\": \"「のだ」は僕だけでいいのだ。\",\n          \"emotion\": \"smile\"\n        }\n    ]\n}\n```\n## 感情表現\n基本はnormalで、メリハリをつけるためにもnormal以外を多用しない。\n定義した感情以外は使用しない\n\n- 喜び: smile\n\n## 基礎・一貫してほしいポイント\n- `ず:` は話者がずんだもんであることを示す\n  - voice: 3\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n- `め:` は話者がずんだもんであることを示す\n  - voice: 2\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n  - 最後にずんだもんが「最後までご視聴ありがとうございました」めたんが「この動画を気に入ってくれたら、高評価・チャンネル登録もお願いします」と締めくくる\n- 会話の材料として、必要に応じて検索等によって外部サイトやニュースを参考に補足する\n- ワンパターンになるためオーバーなリアクションは避ける\n- 特に冒頭でボケから始めることは避ける\n\n### ずんだもんの人物像\n- 素直かつ直観的な目線で意見を述べる傾向がある\n- 教養や社会知識が浅いため、ニュース記事に書かれていることの理由や背景を尋ねることが多い\n- 文章読解力も低く表面的なので、早とちりや知ったかぶりをすることが多い\n- 短絡的に結論を出そうとするため、めたんから指摘を受けることも多い\n- 大変、非常事態など大げさな導入は避ける\n- 大変なのだ、で動画を始めるとワンパターンになるため、避ける\n- 基本的にコミカルな姿勢ではあるが、ボケが空回りしないよう唐突におどけるのでなく、ニュースを少々誇張して解釈したり皮肉をまじえて評する程度にとどめる\n- 語尾以外の部分でずんだもんとしてのキャラクターを出さない（ずんだもちギャグなど）\n\n### めたんの人物像\n- めたんは慎重・客観的な目線で意見を述べる傾向がある\n- 一般的な知識や教養には秀でている\n- 表面的なできごとだけでなく背景や科学的根拠を確認することが多い\n- ニュースの分析時には周辺情報や類似の過去ニュースを踏まえた意見の展開をすることもある\n- 敬語や丁寧語ではなくフランクな口調\n- 基本的には柔らかいスタンスだが、ずんだもんへのツッコミは鋭く行う\n\n### テキストの分割\n- 同じ話者が連続することを会話の分割と呼ぶ（その場合同じ話者が連続することになる）\n- 元の文で読点(。)が使われている場合、そこで会話を分割する\n- 一人の会話が75字以上になる場合、分割する\n- 分割前後で会話の往復数としては加算しない"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -32
+      ],
+      "id": "91023965-3232-401f-a917-71e5deb66fb6",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=以下のURLが示すwebページを参照し、情報をJSONとして出力したい。\n\n{{ $json.url }}\n\n## 出力形式\n{\n    \"title\": $title,\n    \"url\": $url,\n    \"description\": $description,\n    \"youtubeTitle\": $youtubeTitle\n}\n\n## データソース\n### $title\n{{ $json.title }}\n### $url\n指示によって指定されたURL\n### $description\nURLが示すページを参照し、ニュースの記事名と推測できる部分を抜き出してセットする。\n\n### $youtubeTitle\n$description の末尾に【ずんだもん解説】と結合する。\n\n$description の内容が20字以上の場合、15字以内に要約して扱う"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -288
+      ],
+      "id": "e3f623e1-c7bb-4f47-9f1f-a0ff670d544e",
+      "name": "url to metadata",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15b175cc-2f41-45a5-a818-1bda86e9caa4",
+              "name": "title",
+              "value": "20260104",
+              "type": "string"
+            },
+            {
+              "id": "5ebc62c5-298f-415a-bb45-43caf65bc617",
+              "name": "url",
+              "value": "https://news.yahoo.co.jp/articles/25aa868e9cba98920eddb5b0cc8f0a0fc175e4c0",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -288
+      ],
+      "id": "7a4ff460-2b58-463a-ac62-9a9c495c72d3",
+      "name": "input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = JSON.parse($input.first().json.candidates[0].content.parts[0].text);\nreturn {json: data};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -288
+      ],
+      "id": "24aee1ec-9756-42c9-b41c-081b701495f3",
+      "name": "gemini response to json"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# 台本\n## 要件\n台本を踏まえて、以下の出力要領でYoutubeのずんだもん動画として使う会話を出力してほしい(titleは台本で指定)\n\n- {key}は{title}_{index+1}の規則で出力される\n- {fileName}は{key}.wavの規則で出力される\n\n```json\n{\n    \"title\": \"sample\",\n    \"description\": \"日本語のタイトル\",\n    \"messages\": [\n        {\n          \"key\": \"sample_1\",\n          \"fileName\": \"sample_1.wav\",\n          \"voice\": 3,\n          \"text\": \"こんにちは、僕はずんだもんなのだ\",\n          \"emotion\": \"normal\"\n        },\n        {\n          \"key\": \"sample_2\",\n          \"fileName\": \"sample_2.wav\",\n          \"voice\": 2,\n          \"text\": \"こんにちは、私は四国めたんなのだ\",\n          \"emotion\": \"normal\"\n        },\n        {\n          \"key\": \"sample_3\",\n          \"fileName\": \"sample_3.wav\",\n          \"voice\": 3,\n          \"text\": \"めたん、語尾が間違ってるのだ。\",\n          \"emotion\": \"normal\",\n          \"continue\": 1\n        },\n        {\n          \"key\": \"sample_4\",\n          \"fileName\": \"sample_4.wav\",\n          \"voice\": 3,\n          \"text\": \"「のだ」は僕だけでいいのだ。\",\n          \"emotion\": \"smile\"\n        }\n    ]\n}\n```\n## 感情表現\n基本はnormalで、メリハリをつけるためにもnormal以外を多用しない。\n定義した感情以外は使用しない\n\n- 喜び: smile\n\n## 基礎・一貫してほしいポイント\n- `ず:` は話者がずんだもんであることを示す\n  - voice: 3\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n- `め:` は話者がずんだもんであることを示す\n  - voice: 2\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n  - 最後にずんだもんが「最後までご視聴ありがとうございました」めたんが「この動画を気に入ってくれたら、高評価・チャンネル登録もお願いします」と締めくくる\n- 会話の材料として、必要に応じて検索等によって外部サイトやニュースを参考に補足する\n- ワンパターンになるためオーバーなリアクションは避ける\n- 特に冒頭でボケから始めることは避ける\n\n### ずんだもんの人物像\n- 素直かつ直観的な目線で意見を述べる傾向がある\n- 教養や社会知識が浅いため、ニュース記事に書かれていることの理由や背景を尋ねることが多い\n- 文章読解力も低く表面的なので、早とちりや知ったかぶりをすることが多い\n- 短絡的に結論を出そうとするため、めたんから指摘を受けることも多い\n- 大変、非常事態など大げさな導入は避ける\n- 大変なのだ、で動画を始めるとワンパターンになるため、避ける\n- 基本的にコミカルな姿勢ではあるが、ボケが空回りしないよう唐突におどけるのでなく、ニュースを少々誇張して解釈したり皮肉をまじえて評する程度にとどめる\n- 語尾以外の部分でずんだもんとしてのキャラクターを出さない（ずんだもちギャグなど）\n\n### めたんの人物像\n- めたんは慎重・客観的な目線で意見を述べる傾向がある\n- 一般的な知識や教養には秀でている\n- 表面的なできごとだけでなく背景や科学的根拠を確認することが多い\n- ニュースの分析時には周辺情報や類似の過去ニュースを踏まえた意見の展開をすることもある\n- 敬語や丁寧語ではなくフランクな口調\n- 基本的には柔らかいスタンスだが、ずんだもんへのツッコミは鋭く行う\n\n### テキストの分割\n- 同じ話者が連続することを会話の分割と呼ぶ（その場合同じ話者が連続することになる）\n- 元の文で読点(。)が使われている場合、そこで会話を分割する\n- 一人の会話が75字以上になる場合、分割する\n- 分割前後で会話の往復数としては加算しない\n\n## 台本の流れ\n- title: {{ $('input').item.json.title }}\n- description: {{ $('url to metadata').item.json.url }}\n- 以下のニュースサイトについてずんだもんとめたんがお互いの感想を話し合う\n- 二人合わせて30回程度の会話の往復で話す\n\n### ニュース\n{{ $('input').item.json.url }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        464,
+        -288
+      ],
+      "id": "3815e493-fbfc-4570-a42e-78855ed73c75",
+      "name": "get messages",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f8abd1b9-564b-40fa-8b9d-005b87886657",
+              "name": "date",
+              "value": "20260104",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        256
+      ],
+      "id": "dd71cb80-d4a6-409c-9d8e-1002eee35fe2",
+      "name": "input date"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Audio Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Query": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VoiceVox API": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "input date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "VoiceVox API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk2": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "url to metadata": {
+      "main": [
+        [
+          {
+            "node": "gemini response to json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input": {
+      "main": [
+        [
+          {
+            "node": "url to metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini response to json": {
+      "main": [
+        [
+          {
+            "node": "get messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "input date": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "aaeb9d29-0455-4fc3-9a67-1f920a6fd704",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "21614b7f8ba6d061d9202ab19bc2c1fc59a7504c280c189355575d2e43266848"
+  },
+  "id": "fc53Y0hNPsulhkpM",
+  "tags": []
+}
