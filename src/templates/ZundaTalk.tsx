@@ -20,13 +20,10 @@ const defaultZundamonStyle: CharacterStyle = {
 
 const defaultMetanStyle: CharacterStyle = {
   position: "absolute",
-  // bottom: "-1000px",
-  // right: "-300px",
-  top: "113%",           /* 親の高さ50%の位置に配置 */
-  right: "-63%",          /* 親の幅50%の位置に配置 */
+  top: "17%",           /* 親の高さ50%の位置に配置 */
+  right: "-25%",          /* 親の幅50%の位置に配置 */
   transform: "translate(-50%, -50%)", /* 自身の幅・高さの半分だけ戻す */
-  width: "1082px",
-  height: "1820px",
+  scale: 0.43,
 };
 
 export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX.Element => {

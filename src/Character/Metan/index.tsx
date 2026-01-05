@@ -1,11 +1,10 @@
 import React from "react";
 import type { LayerMetadata } from "../../util/Psd";
 import type { MetanMetadata } from "./types";
-import { createCharacterImage, setLayerVisibility, type CharacterConfig } from "../Common";
+import { createCharacterCanvas, setLayerVisibility, type CharacterConfig, type CharacterCanvasProps } from "../Common";
 import { applyLipsync } from "../lipsync";
 
 const basePath = "img/characters/Metan/";
-const scale = 0.43;
 const metadataJson = require("./metadata.json");
 
 // デフォルトのvisible状態を設定する関数
@@ -72,18 +71,12 @@ const config: CharacterConfig<MetanMetadata> = {
   setMouthState,
 };
 
-export interface MetanProps extends React.HTMLAttributes<HTMLDivElement> {
-  style?: React.CSSProperties;
-  emotion?: string;
-  pose?: string;
-  lipSync?: number;
-  flipHorizontal?: boolean;
-  scale?: number;
+export interface MetanProps extends CharacterCanvasProps {
 }
 
-// scaleのデフォルト値を設定するラッパーコンポーネント
-const MetanComponent = createCharacterImage(config);
+// classNameのデフォルト値を設定するラッパーコンポーネント
+const MetanComponent = createCharacterCanvas(config);
 
 export const Metan: React.FC<MetanProps> = (props) => {
-  return <MetanComponent {...props} scale={props.scale ?? scale} />;
+  return <MetanComponent {...props} className={props.className ?? "metan"} />;
 };
