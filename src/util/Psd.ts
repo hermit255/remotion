@@ -92,7 +92,7 @@ const processChildrenRecursively = (
   });
 };
 
-// metaDataを処理して、Record<string, LayerMetadata>形式に変換する関数
+// metaData(json)を処理して、Record<string, LayerMetadata>形式に変換する関数
 export const processMetadata = (
   metaData: Metadata,
   basePath: string
@@ -120,4 +120,119 @@ export const processMetadata = (
     }
     return acc;
   }, {} as Record<string, LayerMetadata>);
+};
+
+// Metadataを再帰的に走査して、すべてのレイヤーを取得する関数
+// 親レイヤーのindexも保持して、描画順序を決定する
+export const collectAllLayers = (
+  metadata: Record<string, LayerMetadata>
+): Array<{layer: LayerMetadata, parentIndex: number}> => {
+  const layers: Array<{layer: LayerMetadata, parentIndex: number}> = [];
+  
+  const traverse = (layer: LayerMetadata, parentIndex: number) => {
+    // 画像ファイル（is_group=false かつ imagePathがある）の場合のみ追加
+    if (!layer.is_group && (layer as any).imagePath) {
+      layers.push({ layer, parentIndex });
+    }
+    
+    // childrenがある場合は再帰的に処理
+    if (layer.children && typeof layer.children === 'object') {
+      Object.values(layer.children).forEach((child) => {
+        traverse(child, layer.index);
+      });
+    }
+  };
+  
+  Object.values(metadata).forEach((layer) => {
+    traverse(layer, -1); // ルートレイヤーの親indexは-1
+  });
+  
+  return layers;
+};
+
+// レイヤー配列からcanvasサイズを計算する関数
+export const calculateCanvasSize = (
+  layers: Array<{element: LayerMetadata, imagePath: string}>
+): { width: number; height: number } => {
+  let maxWidth = 0;
+  let maxHeight = 0;
+  layers.forEach(({ element }) => {
+    const right = element.left + element.width;
+    const bottom = element.top + element.height;
+    maxWidth = Math.max(maxWidth, right);
+    maxHeight = Math.max(maxHeight, bottom);
+  });
+  return { width: maxWidth, height: maxHeight };
+};
+
+// visible=trueのレイヤーを取得し、描画順序でソートする関数
+export const getVisibleLayersSorted = (
+  allLayers: Array<{layer: LayerMetadata, parentIndex: number}>
+): Array<{element: LayerMetadata, imagePath: string}> => {
+  return allLayers
+    .filter(({ layer }) => layer.visible === true)
+    .map(({ layer, parentIndex }) => {
+      const imagePath = (layer as any).imagePath;
+      return { element: layer, imagePath, parentIndex };
+    })
+    .filter((item): item is {element: LayerMetadata, imagePath: string, parentIndex: number} => 
+      item.imagePath !== undefined && item.imagePath !== null
+    )
+    .sort((a, b) => {
+      // 親indexと子indexを組み合わせてソート（Photoshopと同じ描画順序）
+      // export_layers.pyでreverse()が使われているため、エクスポートされたJSONでは
+      // index 0が一番上に表示されるレイヤー、indexが大きいものが下に表示されるレイヤー
+      // canvasは先に描画したものが下に、後に描画したものが上に表示されるため、
+      // indexが大きい順（下のレイヤーから）に描画する
+      if (a.parentIndex !== b.parentIndex) {
+        return b.parentIndex - a.parentIndex; // 親indexが大きい順
+      }
+      return b.element.index - a.element.index; // indexが大きい順（下のレイヤーから上へ描画）
+    })
+    .map(({ element, imagePath }) => ({ element, imagePath })); // parentIndexを削除
+};
+
+// canvasにレイヤーを描画する関数
+export const renderLayersToCanvas = async (
+  canvas: HTMLCanvasElement,
+  layers: Array<{element: LayerMetadata, imagePath: string}>
+): Promise<void> => {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Failed to get 2d context from canvas');
+  }
+
+  // 画像を読み込んで描画
+  try {
+    const images = await Promise.all(
+      layers.map(({ imagePath }) => {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = (error) => {
+            console.error(`Failed to load image: ${imagePath}`, error);
+            reject(error);
+          };
+          img.src = imagePath;
+        });
+      })
+    );
+
+    // canvasをクリア
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 各画像を描画
+    images.forEach((img, index) => {
+      const { element } = layers[index];
+      const x = element.left;
+      const y = element.top;
+      const width = element.width;
+      const height = element.height;
+      
+      ctx.drawImage(img, x, y, width, height);
+    });
+  } catch (error) {
+    console.error('Error loading images for canvas:', error);
+    throw error;
+  }
 };

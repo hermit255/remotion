@@ -2,7 +2,16 @@ import React, { useMemo, useRef, useEffect } from "react";
 import {
   useCurrentFrame,
 } from "remotion";
-import { metadataSchema, processMetadata, type LayerMetadata, type Metadata } from "../../util/Psd";
+import { 
+  metadataSchema, 
+  processMetadata, 
+  collectAllLayers,
+  calculateCanvasSize,
+  getVisibleLayersSorted,
+  renderLayersToCanvas,
+  type LayerMetadata, 
+  type Metadata 
+} from "../../util/Psd";
 import type { ZundamonMetadata } from "./types";
 import { applyLipsync } from "../lipsync";
 
@@ -13,32 +22,6 @@ const metaData: Metadata = metadataSchema.parse(metadataJson);
 
 // metaDataの各要素およびchildrenに対してconvertChildrenを再帰的に適用
 const modMetaData = processMetadata(metaData, basePath) as ZundamonMetadata;
-
-// Metadataを再帰的に走査して、すべてのレイヤーを取得する関数
-// 親レイヤーのindexも保持して、描画順序を決定する
-const collectAllLayers = (metadata: Record<string, LayerMetadata>): Array<{layer: LayerMetadata, parentIndex: number}> => {
-  const layers: Array<{layer: LayerMetadata, parentIndex: number}> = [];
-  
-  const traverse = (layer: LayerMetadata, parentIndex: number) => {
-    // 画像ファイル（is_group=false かつ imagePathがある）の場合のみ追加
-    if (!layer.is_group && (layer as any).imagePath) {
-      layers.push({ layer, parentIndex });
-    }
-    
-    // childrenがある場合は再帰的に処理
-    if (layer.children && typeof layer.children === 'object') {
-      Object.values(layer.children).forEach((child) => {
-        traverse(child, layer.index);
-      });
-    }
-  };
-  
-  Object.values(metadata).forEach((layer) => {
-    traverse(layer, -1); // ルートレイヤーの親indexは-1
-  });
-  
-  return layers;
-};
 
 // すべてのレイヤーを取得
 const allLayers = collectAllLayers(modMetaData);
@@ -121,38 +104,12 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     }
 
     // visible=trueのレイヤーだけを取得し、indexでソート（Photoshopと同じ描画順序）
-    return allLayers
-      .filter(({ layer }) => layer.visible === true)
-      .map(({ layer, parentIndex }) => {
-        const imagePath = (layer as any).imagePath;
-        return { element: layer, imagePath, parentIndex };
-      })
-      .filter((item): item is {element: LayerMetadata, imagePath: string, parentIndex: number} => item.imagePath !== undefined && item.imagePath !== null)
-      .sort((a, b) => {
-        // 親indexと子indexを組み合わせてソート（Photoshopと同じ描画順序）
-        // export_layers.pyでreverse()が使われているため、エクスポートされたJSONでは
-        // index 0が一番上に表示されるレイヤー、indexが大きいものが下に表示されるレイヤー
-        // canvasは先に描画したものが下に、後に描画したものが上に表示されるため、
-        // indexが大きい順（下のレイヤーから）に描画する
-        if (a.parentIndex !== b.parentIndex) {
-          return b.parentIndex - a.parentIndex; // 親indexが大きい順
-        }
-        return b.element.index - a.element.index; // indexが大きい順（下のレイヤーから上へ描画）
-      })
-      .map(({ element, imagePath }) => ({ element, imagePath })); // parentIndexを削除
+    return getVisibleLayersSorted(allLayers);
   }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
 
   // canvasのサイズを計算（useMemoでメモ化）
   const canvasSize = useMemo(() => {
-    let maxWidth = 0;
-    let maxHeight = 0;
-    imageMetadata.forEach(({ element }) => {
-      const right = (element.left + element.width);
-      const bottom = (element.top + element.height);
-      maxWidth = Math.max(maxWidth, right);
-      maxHeight = Math.max(maxHeight, bottom);
-    });
-    return { width: maxWidth, height: maxHeight };
+    return calculateCanvasSize(imageMetadata);
   }, [imageMetadata]);
 
   // canvasのサイズを初期設定
@@ -172,45 +129,9 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     const canvas = canvasRef.current;
     if (!canvas || imageMetadata.length === 0) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // 画像を読み込んで描画
-    const loadAndDrawImages = async () => {
-      try {
-        const images = await Promise.all(
-          imageMetadata.map(({ imagePath }) => {
-            return new Promise<HTMLImageElement>((resolve, reject) => {
-              const img = new Image();
-              img.onload = () => resolve(img);
-              img.onerror = (error) => {
-                console.error(`Failed to load image: ${imagePath}`, error);
-                reject(error);
-              };
-              img.src = imagePath;
-            });
-          })
-        );
-
-        // canvasをクリア
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 各画像を描画
-        images.forEach((img, index) => {
-          const { element } = imageMetadata[index];
-          const x = element.left;
-          const y = element.top;
-          const width = element.width;
-          const height = element.height;
-          
-          ctx.drawImage(img, x, y, width, height);
-        });
-      } catch (error) {
-        console.error('Error loading images for Zundamon:', error);
-      }
-    };
-
-    loadAndDrawImages();
+    renderLayersToCanvas(canvas, imageMetadata).catch((error) => {
+      console.error('Error loading images for Zundamon:', error);
+    });
   }, [imageMetadata, canvasSize]);
 
   const containerStyle: React.CSSProperties = {
