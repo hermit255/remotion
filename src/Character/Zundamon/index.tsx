@@ -16,7 +16,6 @@ import type { ZundamonMetadata } from "./types";
 import { applyLipsync } from "../lipsync";
 
 const basePath = "img/characters/Zundamon/";
-const scale = 0.5;
 const metadataJson = require("./metadata.json");
 const metaData: Metadata = metadataSchema.parse(metadataJson);
 
@@ -45,7 +44,7 @@ const setDefaultVisibility = () => {
   modMetaData['口']?.children?.['むふ'] && (modMetaData['口'].children!['むふ'].visible = true);
 };
 
-export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface ZundamonProps extends Omit<React.CanvasHTMLAttributes<HTMLCanvasElement>, 'style'> {
   style?: React.CSSProperties;
   emotion?: string;
   pose?: string;
@@ -148,15 +147,16 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
   const displayHeight = canvasSize.height > 0 ? canvasSize.height : 1650;
 
   return (
-    <div className="zundamon" {...domProps} style={containerStyle}>
-      <canvas 
-        ref={canvasRef} 
-        style={{ 
-          display: 'block',
-          width: `${displayWidth * scale}px`,
-          height: `${displayHeight * scale}px`,
-        }} 
-      />
-    </div>
+    <canvas 
+      className="zundamon"
+      ref={canvasRef} 
+      {...domProps}
+      style={{ 
+        display: 'block',
+        width: `${displayWidth}px`,
+        height: `${displayHeight}px`,
+        ...containerStyle
+      }} 
+    />
   );
 };

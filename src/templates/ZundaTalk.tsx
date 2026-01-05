@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useCurrentFrame } from "remotion";
 import { Zundamon } from "../Character/Zundamon";
 import { Metan } from "../Character/Metan";
@@ -12,13 +12,10 @@ const METAN = "metan";
 // デフォルトのスタイル
 const defaultZundamonStyle: CharacterStyle = {
   position: "absolute",
-  // bottom: "0",
-  // left: "0",
-  top: "103%",           /* 親の高さ50%の位置に配置 */
-  left: "-5%",          /* 親の幅50%の位置に配置 */
+  top: "27%",           /* 親の高さ50%の位置に配置 */
+  left: "0%",          /* 親の幅50%の位置に配置 */
   transform: "translate(-50%, -50%)", /* 自身の幅・高さの半分だけ戻す */
-  width: "1082px",
-  height: "1650px",
+  scale: 0.5,
 };
 
 const defaultMetanStyle: CharacterStyle = {
@@ -33,36 +30,33 @@ const defaultMetanStyle: CharacterStyle = {
 };
 
 export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX.Element => {
-  const zunda = ZUNDAMON;
-  const metan = METAN;
   const frame = useCurrentFrame();
-  // 現在のフレームに応じたスタイルを選択
+  
+  // 現在のフレームに応じたスタイルと状態を選択
   let currentZundamonStyle: React.CSSProperties = defaultZundamonStyle as React.CSSProperties;
   let currentMetanStyle: React.CSSProperties = defaultMetanStyle as React.CSSProperties;
+  let talkingSpeedZundamon = 0;
+  let talkingSpeedMetan = 0;
+  let emotionZundamon: string | null = null;
+  let emotionMetan: string | null = null;
 
-  // それぞれに初期値を設定
-  let talkingSpeedZundamon: number = 0;
-  let talkingSpeedMetan: number = 0;
-  let emotionZundamon: React.RefObject<string | null> = useRef(null);
-  let emotionMetan: React.RefObject<string | null> = useRef(null);
   for (const talk of talks) {
     if (talk.from === undefined || talk.from === null || !talk.durationInFrames) continue;
-    let tmpZundamonStyle = currentZundamonStyle as React.CSSProperties;
-    let tmpMetanStyle = currentMetanStyle as React.CSSProperties;
+    
     if (frame >= talk.from && frame < talk.from + talk.durationInFrames) {
-      // ずんだもんトーク中
       if (talk.voice === 3) {
-        tmpMetanStyle = { ...currentMetanStyle } as React.CSSProperties;
+        // ずんだもんトーク中
         talkingSpeedZundamon = 1;
-        emotionZundamon.current = talk.emotion ?? null;
+        emotionZundamon = talk.emotion ?? null;
+        currentZundamonStyle = { ...currentZundamonStyle, ...(style?.[talk.key]?.[ZUNDAMON] || {}) } as React.CSSProperties;
+        currentMetanStyle = { ...currentMetanStyle, ...(style?.[talk.key]?.[METAN] || {}) } as React.CSSProperties;
       } else if (talk.voice === 2) {
-      // めたんトーク中
-        tmpZundamonStyle = { ...currentZundamonStyle } as React.CSSProperties;
+        // めたんトーク中
         talkingSpeedMetan = 1;
-        emotionMetan.current = talk.emotion ?? null;
+        emotionMetan = talk.emotion ?? null;
+        currentZundamonStyle = { ...currentZundamonStyle, ...(style?.[talk.key]?.[ZUNDAMON] || {}) } as React.CSSProperties;
+        currentMetanStyle = { ...currentMetanStyle, ...(style?.[talk.key]?.[METAN] || {}) } as React.CSSProperties;
       }
-      currentZundamonStyle = { ...tmpZundamonStyle, ...(style?.[talk.key]?.[zunda] || {}) } as React.CSSProperties;
-      currentMetanStyle = { ...tmpMetanStyle, ...(style?.[talk.key]?.[metan] || {}) } as React.CSSProperties;
     }
   }
 
@@ -70,16 +64,18 @@ export const ZundaTalk = ({ talks = [], style = {} }: ZundaTalkProps): React.JSX
     <>
       <Zundamon
         style={currentZundamonStyle}
-        emotion={emotionZundamon.current || undefined}
-        pose="" lipSync={talkingSpeedZundamon}
+        emotion={emotionZundamon || undefined}
+        pose=""
+        lipSync={talkingSpeedZundamon}
         flipHorizontal={true}
-        />
+      />
       <Metan
         style={currentMetanStyle}
-        emotion={emotionMetan.current || undefined} pose=""
+        emotion={emotionMetan || undefined}
+        pose=""
         lipSync={talkingSpeedMetan}
         flipHorizontal={false}
-        />
+      />
     </>
   );
 };
