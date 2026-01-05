@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import {
   useCurrentFrame,
 } from "remotion";
@@ -8,11 +8,6 @@ import { applyLipsync } from "../lipsync";
 
 const basePath = "img/characters/Zundamon/";
 const scale = 0.5;
-const partsStyleBase: React.CSSProperties = {
-  position: 'absolute',
-  transform: `scale(${scale})`,
-  transformOrigin: 'top left',
-};
 const metadataJson = require("./metadata.json");
 const metaData: Metadata = metadataSchema.parse(metadataJson);
 
@@ -43,9 +38,10 @@ export interface ZundamonProps extends React.ImgHTMLAttributes<HTMLImageElement>
 export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
   const frame = useCurrentFrame();
   const { lipSync, emotion, pose, flipHorizontal, style, ...domProps } = props;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // stateの各要素をdomとして出力する関数（useMemoでメモ化）
-  const images = useMemo((): React.JSX.Element[] => {
+  // stateの各要素をメタデータとして取得（useMemoでメモ化）
+  const imageMetadata = useMemo((): Array<{element: LayerMetadata, imagePath: string}> => {
     const state = {...stateDefault};
     if (emotion === 'smile') {
       state.singleEye = modMetaData['目']?.children?.['にっこり'];
@@ -74,25 +70,83 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
 
     return Object.values(state)
       .filter((element): element is LayerMetadata => element !== undefined && element !== null)
-      .map((element, index) => {
+      .map((element) => {
         const imagePath = (element as any).imagePath;
-        if (!imagePath) return null;
-        
-        return (
-          <img
-            key={index}
-            src={imagePath}
-            alt={element.name}
-            style={{
-              ...partsStyleBase,
-              top: `${element.top * scale}px`,
-              left: `${element.left * scale}px`,
-            }}
-          />
-        );
+        return { element, imagePath };
       })
-      .filter((element): element is React.JSX.Element => element !== null);
+      .filter((item): item is {element: LayerMetadata, imagePath: string} => item.imagePath !== undefined && item.imagePath !== null);
   }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
+
+  // canvasのサイズを計算（useMemoでメモ化）
+  const canvasSize = useMemo(() => {
+    let maxWidth = 0;
+    let maxHeight = 0;
+    imageMetadata.forEach(({ element }) => {
+      const right = (element.left + element.width);
+      const bottom = (element.top + element.height);
+      maxWidth = Math.max(maxWidth, right);
+      maxHeight = Math.max(maxHeight, bottom);
+    });
+    return { width: maxWidth, height: maxHeight };
+  }, [imageMetadata]);
+
+  // canvasのサイズを初期設定
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // canvasのサイズを設定（画像読み込み前に設定）
+    if (canvasSize.width > 0 && canvasSize.height > 0) {
+      canvas.width = canvasSize.width;
+      canvas.height = canvasSize.height;
+    }
+  }, [canvasSize]);
+
+  // canvasに画像を描画
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || imageMetadata.length === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // 画像を読み込んで描画
+    const loadAndDrawImages = async () => {
+      try {
+        const images = await Promise.all(
+          imageMetadata.map(({ imagePath }) => {
+            return new Promise<HTMLImageElement>((resolve, reject) => {
+              const img = new Image();
+              img.onload = () => resolve(img);
+              img.onerror = (error) => {
+                console.error(`Failed to load image: ${imagePath}`, error);
+                reject(error);
+              };
+              img.src = imagePath;
+            });
+          })
+        );
+
+        // canvasをクリア
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 各画像を描画
+        images.forEach((img, index) => {
+          const { element } = imageMetadata[index];
+          const x = element.left;
+          const y = element.top;
+          const width = element.width;
+          const height = element.height;
+          
+          ctx.drawImage(img, x, y, width, height);
+        });
+      } catch (error) {
+        console.error('Error loading images for Zundamon:', error);
+      }
+    };
+
+    loadAndDrawImages();
+  }, [imageMetadata, canvasSize]);
 
   const containerStyle: React.CSSProperties = {
     ...style,
@@ -103,9 +157,20 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     }),
   };
 
+  // canvasSizeが0の場合はデフォルトサイズを使用
+  const displayWidth = canvasSize.width > 0 ? canvasSize.width : 1082;
+  const displayHeight = canvasSize.height > 0 ? canvasSize.height : 1650;
+
   return (
     <div className="zundamon" {...domProps} style={containerStyle}>
-      {images}
+      <canvas 
+        ref={canvasRef} 
+        style={{ 
+          display: 'block',
+          width: `${displayWidth * scale}px`,
+          height: `${displayHeight * scale}px`,
+        }} 
+      />
     </div>
   );
 };
