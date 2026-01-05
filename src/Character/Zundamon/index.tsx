@@ -25,23 +25,83 @@ const modMetaData = processMetadata(metaData, basePath) as ZundamonMetadata;
 // すべてのレイヤーを取得
 const allLayers = collectAllLayers(modMetaData);
 
+// レイヤーの可視性を設定するヘルパー関数
+const setLayerVisibility = (
+  layer: LayerMetadata | undefined,
+  visible: boolean
+): void => {
+  if (layer) {
+    layer.visible = visible;
+  }
+};
+
 // デフォルトのvisible状態を設定する関数
-const setDefaultVisibility = () => {
+const setDefaultVisibility = (): void => {
   // すべてのレイヤーを一旦非表示にする
   allLayers.forEach(({ layer }) => {
     layer.visible = false;
   });
   
   // デフォルトで表示するレイヤーを設定
-  modMetaData['服装1']?.children?.['いつもの服'] && (modMetaData['服装1'].children!['いつもの服'].visible = true);
-  modMetaData['枝豆']?.children?.['枝豆通常'] && (modMetaData['枝豆'].children!['枝豆通常'].visible = true);
-  modMetaData['服装1']?.children?.['右腕']?.children?.['基本'] && (modMetaData['服装1'].children!['右腕'].children!['基本'].visible = true);
-  modMetaData['服装1']?.children?.['左腕']?.children?.['基本'] && (modMetaData['服装1'].children!['左腕'].children!['基本'].visible = true);
-  modMetaData['目']?.children?.['目セット']?.children?.['普通白目'] && (modMetaData['目'].children!['目セット'].children!['普通白目'].visible = true);
-  modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['普通目'] && (modMetaData['目'].children!['目セット'].children!['黒目'].children!['普通目'].visible = true);
-  modMetaData['眉']?.children?.['眉'] && (modMetaData['眉'].children!['眉'].visible = true);
-  modMetaData['顔色']?.children?.['ほっぺ'] && (modMetaData['顔色'].children!['ほっぺ'].visible = true);
-  modMetaData['口']?.children?.['むふ'] && (modMetaData['口'].children!['むふ'].visible = true);
+  setLayerVisibility(modMetaData['服装1']?.children?.['いつもの服'], true);
+  setLayerVisibility(modMetaData['枝豆']?.children?.['枝豆通常'], true);
+  setLayerVisibility(modMetaData['服装1']?.children?.['右腕']?.children?.['基本'], true);
+  setLayerVisibility(modMetaData['服装1']?.children?.['左腕']?.children?.['基本'], true);
+  setLayerVisibility(modMetaData['目']?.children?.['目セット']?.children?.['普通白目'], true);
+  setLayerVisibility(modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['普通目'], true);
+  setLayerVisibility(modMetaData['眉']?.children?.['眉'], true);
+  setLayerVisibility(modMetaData['顔色']?.children?.['ほっぺ'], true);
+  setLayerVisibility(modMetaData['口']?.children?.['むふ'], true);
+};
+
+// 目の状態を設定する関数
+const setEyeState = (emotion: string | undefined): void => {
+  const eyeSet = modMetaData['目']?.children?.['目セット'];
+  const normalWhiteEye = eyeSet?.children?.['普通白目'];
+  const normalBlackEye = eyeSet?.children?.['黒目']?.children?.['普通目'];
+  const smileEye = modMetaData['目']?.children?.['にっこり'];
+
+  if (emotion === 'smile') {
+    setLayerVisibility(normalWhiteEye, false);
+    setLayerVisibility(normalBlackEye, false);
+    setLayerVisibility(smileEye, true);
+  } else {
+    setLayerVisibility(smileEye, false);
+    setLayerVisibility(normalWhiteEye, true);
+    setLayerVisibility(normalBlackEye, true);
+  }
+};
+
+// 口の状態を設定する関数
+const setMouthState = (
+  frame: number,
+  lipSync: number | undefined
+): void => {
+  const mouthChildren = modMetaData['口']?.children;
+  if (!mouthChildren) return;
+
+  let targetMouth: LayerMetadata | null = null;
+
+  applyLipsync(
+    frame,
+    lipSync,
+    () => {
+      targetMouth = mouthChildren['ほあー'] || null;
+    },
+    () => {
+      targetMouth = mouthChildren['むふ'] || null;
+    }
+  );
+
+  // すべての口のレイヤーを非表示にする
+  Object.values(mouthChildren).forEach((mouth) => {
+    setLayerVisibility(mouth as LayerMetadata, false);
+  });
+
+  // 選択された口のレイヤーを表示する
+  if (targetMouth) {
+    setLayerVisibility(targetMouth, true);
+  }
 };
 
 export interface ZundamonProps extends Omit<React.CanvasHTMLAttributes<HTMLCanvasElement>, 'style'> {
@@ -63,48 +123,14 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     setDefaultVisibility();
     
     // emotionに応じて目のレイヤーを変更
-    if (emotion === 'smile') {
-      // 通常の目を非表示にする
-      modMetaData['目']?.children?.['目セット']?.children?.['普通白目'] && (modMetaData['目'].children!['目セット'].children!['普通白目'].visible = false);
-      modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['普通目'] && (modMetaData['目'].children!['目セット'].children!['黒目'].children!['普通目'].visible = false);
-      // にっこり目を表示する
-      modMetaData['目']?.children?.['にっこり'] && (modMetaData['目'].children!['にっこり'].visible = true);
-    } else {
-      // にっこり目を非表示にする
-      modMetaData['目']?.children?.['にっこり'] && (modMetaData['目'].children!['にっこり'].visible = false);
-      // 通常の目を表示する
-      modMetaData['目']?.children?.['目セット']?.children?.['普通白目'] && (modMetaData['目'].children!['目セット'].children!['普通白目'].visible = true);
-      modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['普通目'] && (modMetaData['目'].children!['目セット'].children!['黒目'].children!['普通目'].visible = true);
-    }
+    setEyeState(emotion);
 
     // lipsyncが数値なら口パクを行う（ほあーとむふを不規則に繰り返す）
-    let mouthLayer: LayerMetadata | null = null;
-    applyLipsync(
-      frame,
-      lipSync,
-      () => {
-        // 口を開いている状態を作るcallback
-        mouthLayer = modMetaData['口']?.children?.['ほあー'] || null;
-      },
-      () => {
-        // 口を閉じている状態を作るcallback
-        mouthLayer = modMetaData['口']?.children?.['むふ'] || null;
-      }
-    );
-    
-    // 口のレイヤーを更新
-    if (mouthLayer) {
-      // すべての口のレイヤーを非表示にする
-      Object.values(modMetaData['口']?.children || {}).forEach((mouth) => {
-        (mouth as LayerMetadata).visible = false;
-      });
-      // 選択された口のレイヤーを表示する
-      mouthLayer.visible = true;
-    }
+    setMouthState(frame, lipSync);
 
     // visible=trueのレイヤーだけを取得し、indexでソート（Photoshopと同じ描画順序）
     return getVisibleLayersSorted(allLayers);
-  }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
+  }, [emotion, pose, lipSync, frame]);
 
   // canvasのサイズを計算（useMemoでメモ化）
   const canvasSize = useMemo(() => {
@@ -116,7 +142,6 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // canvasのサイズを設定（画像読み込み前に設定）
     if (canvasSize.width > 0 && canvasSize.height > 0) {
       canvas.width = canvasSize.width;
       canvas.height = canvasSize.height;
@@ -128,19 +153,27 @@ export const Zundamon: React.FC<ZundamonProps> = (props: ZundamonProps) => {
     const canvas = canvasRef.current;
     if (!canvas || imageMetadata.length === 0) return;
 
-    renderLayersToCanvas(canvas, imageMetadata).catch((error) => {
-      console.error('Error loading images for Zundamon:', error);
-    });
-  }, [imageMetadata, canvasSize]);
+    let cancelled = false;
+    renderLayersToCanvas(canvas, imageMetadata)
+      .catch((error) => {
+        if (!cancelled) {
+          console.error('Error loading images for Zundamon:', error);
+        }
+      });
 
-  const containerStyle: React.CSSProperties = {
+    return () => {
+      cancelled = true;
+    };
+  }, [imageMetadata]);
+
+  const containerStyle: React.CSSProperties = useMemo(() => ({
     ...style,
     ...(flipHorizontal && {
       transform: style?.transform 
         ? `${style.transform} scaleX(-1)`
         : 'scaleX(-1)',
     }),
-  };
+  }), [style, flipHorizontal]);
 
   // canvasSizeが0の場合はデフォルトサイズを使用
   const displayWidth = canvasSize.width > 0 ? canvasSize.width : 1082;
