@@ -1,4 +1,21 @@
 {
+  "a3b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": {
+    "surface": "仏",
+    "priority": 5,
+    "context_id": 1348,
+    "part_of_speech": "名詞",
+    "part_of_speech_detail_1": "固有名詞",
+    "part_of_speech_detail_2": "一般",
+    "part_of_speech_detail_3": "*",
+    "inflectional_type": "*",
+    "inflectional_form": "*",
+    "stem": "*",
+    "yomi": "ホトケ",
+    "pronunciation": "ホトケ",
+    "accent_type": 1,
+    "mora_count": 5,
+    "accent_associative_rule": "*"
+  },
   "a2b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d": {
     "surface": "疎かに",
     "priority": 5,

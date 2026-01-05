@@ -192,10 +192,11 @@ export const getVisibleLayersSorted = (
         let divisor = 1;
         for (let i = parentIndices.length - 1; i >= 0; i--) {
           combined += parentIndices[i] / divisor;
-          divisor *= 10;
+          // 子のindexは親の1000分の1の重みで評価する
+          divisor *= 1000;
         }
         combined += parentIndex / divisor;
-        divisor *= 10;
+        divisor *= 1000;
         combined += elementIndex / divisor;
         return combined;
       };
