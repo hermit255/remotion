@@ -25,8 +25,18 @@ export const genVoiceSequence = (talk: Talk): React.JSX.Element | null => {
   )
 };
 
-export const genSubtitleSequence = (talk: Talk): React.JSX.Element | null => {
+export const genSubtitleSequence = (
+  talk: Talk,
+  options?: {
+    top?: string;
+    left?: string;
+    width?: string;
+  }
+): React.JSX.Element | null => {
   if (talk.durationInFrames === null) return null;
+  const top = options?.top ?? undefined;
+  const left = options?.left ?? undefined;
+  const width = options?.width ?? "1920px";
   return (
     <Sequence
       key={talk.key + "subtitle"}
@@ -34,7 +44,11 @@ export const genSubtitleSequence = (talk: Talk): React.JSX.Element | null => {
       durationInFrames={talk.durationInFrames}
     >
       <div style={{
-        position: "absolute", bottom: "10%", width: "1920px",
+        position: "absolute", 
+        ...(top !== undefined && { top }),
+        ...(left !== undefined && { left }),
+        ...(top === undefined && { bottom: "10%" }),
+        width,
         display: "flex", justifyContent: "center",
       }}>
         <span style={{
@@ -49,7 +63,14 @@ export const genSubtitleSequence = (talk: Talk): React.JSX.Element | null => {
   )
 };
 
-export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
+export const genSubtitleSequenceV2 = (
+  talk: Talk,
+  options?: {
+    top?: string;
+    left?: string;
+    width?: string;
+  }
+): React.JSX.Element | null => {
   if (talk.durationInFrames === null) return null;
 
   let textColor = "white";
@@ -58,6 +79,9 @@ export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
   } else if (talk.voice === 2) {
     textColor = "#E44175";
   }
+  const top = options?.top ?? "83%";
+  const left = options?.left ?? "15%";
+  const width = options?.width ?? "70%";
   return (
     <Sequence
       key={talk.key + "subtitle"}
@@ -65,7 +89,7 @@ export const genSubtitleSequenceV2 = (talk: Talk): React.JSX.Element | null => {
       durationInFrames={talk.durationInFrames}
     >
       <div style={{
-        position: "absolute", top: "83%", left: "15%", width: "70%",
+        position: "absolute", top, left, width,
         display: "flex", justifyContent: "center",
       }}>
         <span style={{
