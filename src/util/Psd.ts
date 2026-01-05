@@ -192,6 +192,47 @@ export const getVisibleLayersSorted = (
     .map(({ element, imagePath }) => ({ element, imagePath })); // parentIndexを削除
 };
 
+// 画像キャッシュ（パスをキーとして画像を保存）
+const imageCache = new Map<string, HTMLImageElement>();
+// 読み込み中のPromiseを保存（同じ画像の複数回読み込みを防ぐ）
+const loadingPromises = new Map<string, Promise<HTMLImageElement>>();
+
+// 画像を読み込む関数（キャッシュを利用）
+const loadImage = (imagePath: string): Promise<HTMLImageElement> => {
+  // キャッシュに存在し、読み込み完了している場合は即座に返す
+  const cached = imageCache.get(imagePath);
+  if (cached && cached.complete) {
+    return Promise.resolve(cached);
+  }
+
+  // 既に読み込み中の場合は、そのPromiseを返す
+  const loadingPromise = loadingPromises.get(imagePath);
+  if (loadingPromise) {
+    return loadingPromise;
+  }
+
+  // 新しい読み込みを開始
+  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    
+    img.onload = () => {
+      imageCache.set(imagePath, img);
+      loadingPromises.delete(imagePath);
+      resolve(img);
+    };
+    img.onerror = (error) => {
+      loadingPromises.delete(imagePath);
+      console.error(`Failed to load image: ${imagePath}`, error);
+      reject(error);
+    };
+    
+    img.src = imagePath;
+  });
+
+  loadingPromises.set(imagePath, promise);
+  return promise;
+};
+
 // canvasにレイヤーを描画する関数
 export const renderLayersToCanvas = async (
   canvas: HTMLCanvasElement,
@@ -202,20 +243,10 @@ export const renderLayersToCanvas = async (
     throw new Error('Failed to get 2d context from canvas');
   }
 
-  // 画像を読み込んで描画
+  // 画像を読み込んで描画（キャッシュを利用）
   try {
     const images = await Promise.all(
-      layers.map(({ imagePath }) => {
-        return new Promise<HTMLImageElement>((resolve, reject) => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = (error) => {
-            console.error(`Failed to load image: ${imagePath}`, error);
-            reject(error);
-          };
-          img.src = imagePath;
-        });
-      })
+      layers.map(({ imagePath }) => loadImage(imagePath))
     );
 
     // canvasをクリア
