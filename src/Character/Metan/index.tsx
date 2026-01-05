@@ -1,109 +1,89 @@
-import React, { useMemo } from "react";
-import {
-  useCurrentFrame,
-} from "remotion";
-import { metadataSchema, processMetadata, type LayerMetadata, type Metadata } from "../../util/Psd";
+import React from "react";
+import type { LayerMetadata } from "../../util/Psd";
 import type { MetanMetadata } from "./types";
+import { createCharacterImage, setLayerVisibility, type CharacterConfig } from "../Common";
 import { applyLipsync } from "../lipsync";
 
 const basePath = "img/characters/Metan/";
 const scale = 0.43;
-const partsStyleBase: React.CSSProperties = {
-  position: 'absolute',
-  transform: `scale(${scale})`,
-  transformOrigin: 'top left',
-};
 const metadataJson = require("./metadata.json");
-const metaData: Metadata = metadataSchema.parse(metadataJson);
 
-// metaDataの各要素およびchildrenに対してconvertChildrenを再帰的に適用
-const modMetaData = processMetadata(metaData, basePath) as MetanMetadata;
+// デフォルトのvisible状態を設定する関数
+const setDefaultVisibility = (
+  modMetaData: MetanMetadata,
+  _allLayers: Array<{layer: LayerMetadata, parentIndex: number}>
+): void => {
+  // デフォルトで表示するレイヤーを設定
+  setLayerVisibility(modMetaData['頭部アクセサリ']?.children?.['ヘッドドレス'], true);
+  setLayerVisibility(modMetaData['頭部アクセサリ']?.children?.['髪留めハート'], true);
+  setLayerVisibility(modMetaData['ツインドリル右'], true);
+  setLayerVisibility(modMetaData['ツインドリル左'], true);
+  setLayerVisibility(modMetaData['白ロリ服']?.children?.['体'], true);
+  setLayerVisibility(modMetaData['白ロリ服']?.children?.['右腕']?.children?.['指差す'], true);
+  setLayerVisibility(modMetaData['白ロリ服']?.children?.['左腕']?.children?.['マイク'], true);
+  setLayerVisibility(modMetaData['前髪もみあげ'], true);
+  setLayerVisibility(modMetaData['眉']?.children?.['太眉ごきげん'], true);
+  setLayerVisibility(modMetaData['目']?.children?.['目セット']?.children?.['普通白目'], true);
+  setLayerVisibility(modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['カメラ目線'], true);
+  setLayerVisibility(modMetaData['口']?.children?.['ほほえみ'], true);
+  setLayerVisibility(modMetaData['顔色']?.children?.['普通2'], true);
+};
 
-const stateDefault = {
-  hairAccessory_1: modMetaData['頭部アクセサリ']?.children?.['ヘッドドレス'],
-  hairAccessory_2: modMetaData['頭部アクセサリ']?.children?.['髪留めハート'],
-  rightDril: modMetaData['ツインドリル右'],
-  leftDril: modMetaData['ツインドリル左'],
-  body: modMetaData['白ロリ服']?.children?.['体'],
-  rightArm: modMetaData['白ロリ服']?.children?.['右腕']?.children?.['指差す'],
-  leftArm: modMetaData['白ロリ服']?.children?.['左腕']?.children?.['マイク'],
-  frontHair: modMetaData['前髪もみあげ'],
-  eyebrow: modMetaData['眉']?.children?.['太眉ごきげん'],
-  whiteEye: modMetaData['目']?.children?.['目セット']?.children?.['普通白目'],
-  blackEye: modMetaData['目']?.children?.['目セット']?.children?.['黒目']?.children?.['カメラ目線'],
-  singleEye: null,
-  mouth: modMetaData['口']?.children?.['ほほえみ'],
-  complexion: modMetaData['顔色']?.children?.['普通2'],
-}
+// 口の状態を設定する関数
+const setMouthState = (
+  modMetaData: MetanMetadata,
+  frame: number,
+  lipSync: number | undefined
+): void => {
+  const mouthChildren = modMetaData['口']?.children;
+  if (!mouthChildren) return;
 
-export interface MetanProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  const defaultMouth = mouthChildren['ほほえみ'];
+  let targetMouth: LayerMetadata | null = null;
+
+  applyLipsync(
+    frame,
+    lipSync,
+    () => {
+      // 口を開いている状態を作るcallback
+      targetMouth = mouthChildren['わあー'] || null;
+    },
+    () => {
+      // 口を閉じている状態を作るcallback
+      targetMouth = defaultMouth || null;
+    }
+  );
+
+  // すべての口のレイヤーを非表示にする
+  Object.values(mouthChildren).forEach((mouth) => {
+    setLayerVisibility(mouth as LayerMetadata, false);
+  });
+
+  // 選択された口のレイヤーを表示する
+  if (targetMouth) {
+    setLayerVisibility(targetMouth, true);
+  }
+};
+
+const config: CharacterConfig<MetanMetadata> = {
+  metadataJson,
+  basePath,
+  setDefaultVisibility,
+  setMouthState,
+};
+
+export interface MetanProps extends React.HTMLAttributes<HTMLDivElement> {
   style?: React.CSSProperties;
   emotion?: string;
   pose?: string;
   lipSync?: number;
   flipHorizontal?: boolean;
+  scale?: number;
 }
 
-export const Metan: React.FC<MetanProps> = (props: MetanProps) => {
-  const frame = useCurrentFrame();
-  const { lipSync, emotion, pose, flipHorizontal, style, ...domProps } = props;
-  
-  // stateの各要素をdomとして出力する関数（useMemoでメモ化）
-  const images = useMemo((): React.JSX.Element[] => {
-    const state = {...stateDefault};
-    // Metanにはsmile用の特別な目のパーツがないため、通常の目を使用
-    state.singleEye = stateDefault.singleEye;
-    state.blackEye = stateDefault.blackEye;
-    state.whiteEye = stateDefault.whiteEye;
+// scaleのデフォルト値を設定するラッパーコンポーネント
+const MetanComponent = createCharacterImage(config);
 
-    // lipsyncが数値なら口パクを行う（うえーとわあーを不規則に繰り返す）
-    applyLipsync(
-      frame,
-      lipSync,
-      () => {
-        // 口を開いている状態を作るcallback
-        state.mouth = modMetaData['口']?.children?.['わあー'];
-      },
-      () => {
-        // 口を閉じている状態を作るcallback
-        state.mouth = stateDefault.mouth;
-      }
-    );
-
-    return Object.values(state)
-      .filter((element): element is LayerMetadata => element !== undefined && element !== null)
-      .map((element, index) => {
-        const imagePath = (element as any).imagePath;
-        if (!imagePath) return null;
-        
-        return (
-          <img
-            key={index}
-            src={imagePath}
-            alt={element.name}
-            style={{
-              ...partsStyleBase,
-              top: `${element.top * scale}px`,
-              left: `${element.left * scale}px`,
-            }}
-          />
-        );
-      })
-      .filter((element): element is React.JSX.Element => element !== null);
-  }, [emotion, pose, lipSync, frame]); // frameとlipSyncを依存配列に追加
-
-  const containerStyle: React.CSSProperties = {
-    ...style,
-    ...(flipHorizontal && {
-      transform: style?.transform 
-        ? `${style.transform} scaleX(-1)`
-        : 'scaleX(-1)',
-    }),
-  };
-
-  return (
-    <div className="metan" {...domProps} style={containerStyle}>
-      {images}
-    </div>
-  );
+export const Metan: React.FC<MetanProps> = (props) => {
+  return <MetanComponent {...props} scale={props.scale ?? scale} />;
 };

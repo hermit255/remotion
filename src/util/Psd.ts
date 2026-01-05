@@ -123,28 +123,32 @@ export const processMetadata = (
 };
 
 // Metadataを再帰的に走査して、すべてのレイヤーを取得する関数
-// 親レイヤーのindexも保持して、描画順序を決定する
+// すべての親レイヤーのindexを保持して、描画順序を決定する
 export const collectAllLayers = (
   metadata: Record<string, LayerMetadata>
-): Array<{layer: LayerMetadata, parentIndex: number}> => {
-  const layers: Array<{layer: LayerMetadata, parentIndex: number}> = [];
+): Array<{layer: LayerMetadata, parentIndex: number, parentIndices: number[]}> => {
+  const layers: Array<{layer: LayerMetadata, parentIndex: number, parentIndices: number[]}> = [];
   
-  const traverse = (layer: LayerMetadata, parentIndex: number) => {
+  const traverse = (layer: LayerMetadata, parentIndex: number, parentIndices: number[]) => {
     // 画像ファイル（is_group=false かつ imagePathがある）の場合のみ追加
     if (!layer.is_group && (layer as any).imagePath) {
-      layers.push({ layer, parentIndex });
+      layers.push({ layer, parentIndex, parentIndices });
     }
     
     // childrenがある場合は再帰的に処理
     if (layer.children && typeof layer.children === 'object') {
+      const newParentIndices = [...parentIndices];
+      if (parentIndex !== -1) {
+        newParentIndices.push(parentIndex);
+      }
       Object.values(layer.children).forEach((child) => {
-        traverse(child, layer.index);
+        traverse(child, layer.index, newParentIndices);
       });
     }
   };
   
   Object.values(metadata).forEach((layer) => {
-    traverse(layer, -1); // ルートレイヤーの親indexは-1
+    traverse(layer, -1, []); // ルートレイヤーの親indexは-1
   });
   
   return layers;
@@ -167,27 +171,41 @@ export const calculateCanvasSize = (
 
 // visible=trueのレイヤーを取得し、描画順序でソートする関数
 export const getVisibleLayersSorted = (
-  allLayers: Array<{layer: LayerMetadata, parentIndex: number}>
+  allLayers: Array<{layer: LayerMetadata, parentIndex: number, parentIndices: number[]}>
 ): Array<{element: LayerMetadata, imagePath: string}> => {
   return allLayers
     .filter(({ layer }) => layer.visible === true)
-    .map(({ layer, parentIndex }) => {
+    .map(({ layer, parentIndex, parentIndices }) => {
       const imagePath = (layer as any).imagePath;
-      return { element: layer, imagePath, parentIndex };
+      return { element: layer, imagePath, parentIndex, parentIndices };
     })
-    .filter((item): item is {element: LayerMetadata, imagePath: string, parentIndex: number} => 
+    .filter((item): item is {element: LayerMetadata, imagePath: string, parentIndex: number, parentIndices: number[]} => 
       item.imagePath !== undefined && item.imagePath !== null
     )
     .sort((a, b) => {
-      // 親indexと子indexを組み合わせてソート（Photoshopと同じ描画順序）
-      // export_layers.pyでreverse()が使われているため、エクスポートされたJSONでは
-      // index 0が一番上に表示されるレイヤー、indexが大きいものが下に表示されるレイヤー
+      // すべての親のindexを階層的に考慮して計算
+      const calculateCombinedIndex = (parentIndices: number[], parentIndex: number, elementIndex: number): number => {
+        if (parentIndex === -1) {
+          return elementIndex;
+        }
+        let combined = 0;
+        let divisor = 1;
+        for (let i = parentIndices.length - 1; i >= 0; i--) {
+          combined += parentIndices[i] / divisor;
+          divisor *= 10;
+        }
+        combined += parentIndex / divisor;
+        divisor *= 10;
+        combined += elementIndex / divisor;
+        return combined;
+      };
+      
+      const aCombinedIndex = calculateCombinedIndex(a.parentIndices, a.parentIndex, a.element.index);
+      const bCombinedIndex = calculateCombinedIndex(b.parentIndices, b.parentIndex, b.element.index);
+      
       // canvasは先に描画したものが下に、後に描画したものが上に表示されるため、
       // indexが大きい順（下のレイヤーから）に描画する
-      if (a.parentIndex !== b.parentIndex) {
-        return b.parentIndex - a.parentIndex; // 親indexが大きい順
-      }
-      return b.element.index - a.element.index; // indexが大きい順（下のレイヤーから上へ描画）
+      return bCombinedIndex - aCombinedIndex;
     })
     .map(({ element, imagePath }) => ({ element, imagePath })); // parentIndexを削除
 };
