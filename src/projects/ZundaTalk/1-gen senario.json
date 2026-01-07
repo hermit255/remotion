@@ -1,0 +1,221 @@
+{
+  "name": "1-gen senario",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp-image-generation",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp-image-generation"
+        },
+        "prompt": "犬がマラソンに乱入してきたイメージのYoutubeサムネイルを作って",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        320,
+        224
+      ],
+      "id": "d3a923e8-9cad-40b7-82f6-4d90733735eb",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "15b175cc-2f41-45a5-a818-1bda86e9caa4",
+              "name": "title",
+              "value": "20260107",
+              "type": "string"
+            },
+            {
+              "id": "5ebc62c5-298f-415a-bb45-43caf65bc617",
+              "name": "newsSource",
+              "value": "https://www.itmedia.co.jp/news/articles/2601/07/news025.html",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -64
+      ],
+      "id": "194e1e23-9277-486e-911c-aeb3f1b02341",
+      "name": "input"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=## 要件\n{{ $json.newsSource }}\n\n上記のURLが示すページを参照し、参照先コンテンツを元に以下の出力要領でYoutubeのずんだもん動画として使う会話(messages)およびメタデータを出力\n- 以下のニュースサイトについてずんだもんとめたんがお互いの感想を話し合う\n- 二人合わせて30回程度の会話の往復で話す\n\n## 出力フォーマット\n- 各valueは後述のメタデータの章で指示する\n- {key}は{title}_{index+1}の規則で出力される\n- {fileName}は{key}.wavの規則で出力される\n- text, sound に同内容のセリフを書き込む\n\n```json\n{\n    \"title\": \"sample\",\n    \"newsSource\": \"ニュースのURL\",\n    \"newsDescription\": \"ニュースのタイトル\",\n    \"youtubeTitle\": \"youtube投稿時のタイトル\",\n    \"youtubeDescription\": \"youtube投稿時の概要\",\n    \"messages\": [\n        {\n          \"key\": \"sample_1\",\n          \"fileName\": \"sample_1.wav\",\n          \"voice\": 3,\n          \"text\": \"こんにちは、僕はずんだもんなのだ。\",\n          \"sound\": \"こんにちは、僕はずんだもんなのだ。\",\n          \"emotion\": \"smile\"\n        },\n        {\n          \"key\": \"sample_2\",\n          \"fileName\": \"sample_2.wav\",\n          \"voice\": 2,\n          \"text\": \"こんにちは、私は四国めたんよ\",\n          \"sound\": \"こんにちは、私は四国めたんよ\",\n          \"emotion\": \"normal\"\n        },\n    ]\n}\n```\n\n## メタデータ\n### $title\n以下の指定値をとる\n\n{{ $json.title }}\n\n### $newsSource\n冒頭で指定したURL\n\n### $newsDescription\nURLが示すページを参照し、ニュースの記事名に相当する部分を抜き出してセットする。\n\n### $youtubeTitle\n$newsDescription の末尾に【ずんだもん解説】と結合する。\n$newsDescription の内容が20字以上の場合、15字以内に要約して扱う\n\n### $youtubeDescription\n以下のテンプレートに $newsDescription と $newsSource を当てはめる\n\n▼この動画について▼\n以下のニュースをテーマとした解説動画です\n${newsDescription}\n${newsSource}\n\n▼著作権について▼\n動画内で使用している画像の著作権は全て権利所有者様に帰属します。\n\n▼お借りしている素材▼\nVOICEVOX:ずんだもん\nVOICEVOX:四国めたん\n立ち絵(坂本アヒル様)：https://twitter.com/sakamoto_ahr\nみんちりえ様：https://min-chi.material.jp/\nしゃろう様：https://www.dova-s.jp/\n\n### messages\n#### 感情表現\n基本はnormalで、メリハリをつけるためにもnormal以外を多用しない。\n定義した感情以外は使用しない\n\n- 喜び: smile\n\n#### 基礎・一貫してほしいポイント\n- `ず:` は話者がずんだもんであることを示す\n  - voice: 3\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n- `め:` は話者がずんだもんであることを示す\n  - voice: 2\n  - しゃべり方や言葉選びは一般的なずんだもん動画のイメージで設定\n  - 最後にずんだもんが「最後までご視聴ありがとうございました」めたんが「この動画を気に入ってくれたら、高評価・チャンネル登録もお願いします」と締めくくる\n- 会話の材料として、必要に応じて検索等によって外部サイトやニュースを参考に補足する\n- ワンパターンになるためオーバーなリアクションは避ける\n- 特に冒頭でボケから始めることは避ける\n\n#### ずんだもんの人物像\n- 素直かつ直観的な目線で意見を述べる傾向がある\n- 教養や社会知識が浅いため、ニュース記事に書かれていることの理由や背景を尋ねることが多い\n- 文章読解力も低く表面的なので、早とちりや知ったかぶりをすることが多い\n- 短絡的に結論を出そうとするため、めたんから指摘を受けることも多い\n- 大変、非常事態など大げさな導入は避ける\n- 大変なのだ、で動画を始めるとワンパターンになるため、避ける\n- 基本的にコミカルな姿勢ではあるが、ボケが空回りしないよう唐突におどけるのでなく、ニュースを少々誇張して解釈したり皮肉をまじえて評する程度にとどめる\n- 語尾以外の部分でずんだもんとしてのキャラクターを出さない（ずんだもちギャグなど）\n\n#### めたんの人物像\n- めたんは慎重・客観的な目線で意見を述べる傾向がある\n- 一般的な知識や教養には秀でている\n- 表面的なできごとだけでなく背景や科学的根拠を確認することが多い\n- ニュースの分析時には周辺情報や類似の過去ニュースを踏まえた意見の展開をすることもある\n- 敬語や丁寧語ではなくフランクな口調\n- 基本的には柔らかいスタンスだが、ずんだもんへのツッコミは鋭く行う\n\n#### テキストの分割\n- 同じ話者が連続することを会話の分割と呼ぶ（その場合同じ話者が連続することになる）\n- 元の文で読点(。)が使われている場合、そこで会話を分割する\n- 一人の会話が75字以上になる場合、分割する\n- 分割前後で会話の往復数としては加算しない"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -64
+      ],
+      "id": "0f82b37f-33d4-48c4-80db-7ffe171cec7b",
+      "name": "create scenario",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ngnMVew4tt06GLly",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/remotion/projects/ZundaTalk/messages/{{ $('input').item.json.title }}.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        816,
+        -64
+      ],
+      "id": "cf9bf1d5-d325-491f-99bd-4e4c760775e5",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "format": true,
+          "encoding": "utf8"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        -64
+      ],
+      "id": "1681f779-a41d-4cc3-9948-6bbf05ff2023",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        -64
+      ],
+      "id": "5a31cdbf-4192-43f5-a2f1-8471c4fb0ebf",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.all()[0].json.candidates[0].content.parts[0].text;\nconst object = JSON.parse(text);\nconst jsonText = JSON.stringify(object);\nconst buffer = Buffer.from(jsonText);\n\nreturn {\n  json: object,\n  binary: {\n    data: {\n      data: buffer.toString('base64'), // データをBase64化\n      fileName: 'output.json',\n      mimeType: 'application/json',\n      fileExtension: 'json'\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        -64
+      ],
+      "id": "c10907fa-5c3c-4a7b-80b9-aeab0ba049a5",
+      "name": "convert text to binary"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "input": {
+      "main": [
+        [
+          {
+            "node": "create scenario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create scenario": {
+      "main": [
+        [
+          {
+            "node": "convert text to binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert text to binary": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "624ee3d2-f2cb-4886-9126-95f82c6d1504",
+  "meta": {
+    "instanceId": "21614b7f8ba6d061d9202ab19bc2c1fc59a7504c280c189355575d2e43266848"
+  },
+  "id": "yK00RuGpzOQ86bQi",
+  "tags": []
+}
