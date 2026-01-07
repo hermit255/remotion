@@ -27,6 +27,8 @@ create-movie:
 	@sed -i 's|from "./projects/ZundaTalk/Z_[^"]*"|from "./projects/ZundaTalk/Z_$(title)"|' src/Root.tsx && \
 	echo "✓ Updated Root.tsx to use Z_$(title)"
 	@echo "Done! Movie files created for title: $(title)"
+	cursor src/projects/ZundaTalk/Z_$(title).tsx || code src/projects/ZundaTalk/Z_$(title).tsx
+	cursor src/projects/ZundaTalk/messages/$(title).json || code src/projects/ZundaTalk/messages/$(title).json
 
 # render コマンド
 # 使用方法: make render title=20260105
