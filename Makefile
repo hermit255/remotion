@@ -2,49 +2,48 @@
 
 # create movie コマンド
 # 使用方法: make create-movie title=20260105
+# titleが未設定の場合、実行時点のyyyyMMddが自動設定されます
 create-movie:
-	@if [ -z "$(title)" ]; then \
-		echo "Error: title引数が必要です。例: make create-movie title=20260105"; \
-		exit 1; \
-	fi
-	@echo "Creating movie for title: $(title)"
-	@# パート1: create tsx
-	@if [ ! -f "src/projects/ZundaTalk/Z_$(title).tsx" ]; then \
-		cp src/projects/ZundaTalk/Z_template.tsx src/projects/ZundaTalk/Z_$(title).tsx && \
-		sed -i 's/const title = "2025mmdd";/const title = "$(title)";/' src/projects/ZundaTalk/Z_$(title).tsx && \
-		echo "✓ Created Z_$(title).tsx"; \
+	@TITLE=$$([ -z "$(title)" ] && date +%Y%m%d || echo "$(title)"); \
+	if [ -z "$(title)" ]; then \
+		echo "titleが未設定のため、実行時点の日付を設定: $$TITLE"; \
+	fi; \
+	echo "Creating movie for title: $$TITLE"; \
+	if [ ! -f "src/projects/ZundaTalk/Z_$$TITLE.tsx" ]; then \
+		cp src/projects/ZundaTalk/Z_template.tsx src/projects/ZundaTalk/Z_$$TITLE.tsx && \
+		sed -i "s/const title = \"2025mmdd\";/const title = \"$$TITLE\";/" src/projects/ZundaTalk/Z_$$TITLE.tsx && \
+		echo "✓ Created Z_$$TITLE.tsx"; \
 	else \
-		echo "⚠ Z_$(title).tsx already exists, skipping copy"; \
-	fi
-	@# パート2: create json
-	@if [ ! -f "src/projects/ZundaTalk/messages/$(title).json" ]; then \
-		touch src/projects/ZundaTalk/messages/$(title).json && \
-		echo "✓ Created messages/$(title).json"; \
+		echo "⚠ Z_$$TITLE.tsx already exists, skipping copy"; \
+	fi; \
+	if [ ! -f "src/projects/ZundaTalk/messages/$$TITLE.json" ]; then \
+		touch src/projects/ZundaTalk/messages/$$TITLE.json && \
+		echo "✓ Created messages/$$TITLE.json"; \
 	else \
-		echo "⚠ messages/$(title).json already exists, skipping creation"; \
-	fi
-	@# パート3: update root
-	@sed -i 's|from "./projects/ZundaTalk/Z_[^"]*"|from "./projects/ZundaTalk/Z_$(title)"|' src/Root.tsx && \
-	echo "✓ Updated Root.tsx to use Z_$(title)"
-	@echo "Done! Movie files created for title: $(title)"
-	cursor src/projects/ZundaTalk/Z_$(title).tsx || code src/projects/ZundaTalk/Z_$(title).tsx
-	cursor src/projects/ZundaTalk/messages/$(title).json || code src/projects/ZundaTalk/messages/$(title).json
+		echo "⚠ messages/$$TITLE.json already exists, skipping creation"; \
+	fi; \
+	sed -i "s|from \"./projects/ZundaTalk/Z_[^\"]*\"|from \"./projects/ZundaTalk/Z_$$TITLE\"|" src/Root.tsx && \
+	echo "✓ Updated Root.tsx to use Z_$$TITLE"; \
+	echo "Done! Movie files created for title: $$TITLE"; \
+	cursor src/projects/ZundaTalk/Z_$$TITLE.tsx || code src/projects/ZundaTalk/Z_$$TITLE.tsx; \
+	cursor src/projects/ZundaTalk/messages/$$TITLE.json || code src/projects/ZundaTalk/messages/$$TITLE.json
 
 # render コマンド
 # 使用方法: make render title=20260105
+# titleが未設定の場合、実行時点のyyyyMMddが自動設定されます
 render:
-	@if [ -z "$(title)" ]; then \
-		echo "Error: title引数が必要です。例: make render title=20260105"; \
-		exit 1; \
-	fi
-	@if [ ! -d "out" ]; then \
+	@TITLE=$$([ -z "$(title)" ] && date +%Y%m%d || echo "$(title)"); \
+	if [ -z "$(title)" ]; then \
+		echo "titleが未設定のため、実行時点の日付を設定: $$TITLE"; \
+	fi; \
+	if [ ! -d "out" ]; then \
 		mkdir -p out && \
 		echo "✓ Created out/ directory"; \
-	fi
-	@echo "Rendering movie for title: $(title)"
-	@docker compose exec app npx remotion render ZundaMetanTalk out/$(title).mp4 || \
-		(echo "Error: Rendering failed" && exit 1)
-	@echo "✓ Rendering completed: out/$(title).mp4"
+	fi; \
+	echo "Rendering movie for title: $$TITLE"; \
+	docker compose exec app npx remotion render ZundaMetanTalk out/$$TITLE.mp4 || \
+		(echo "Error: Rendering failed" && exit 1); \
+	echo "✓ Rendering completed: out/$$TITLE.mp4"
 	
 # psd コマンド
 # 使用方法: make psd TARGET_FILE=metan
