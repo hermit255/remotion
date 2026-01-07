@@ -9,15 +9,16 @@ services:
       - .:/app
     command: sh -c "npm install && npm run dev"
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.121.3
+    # image: docker.n8n.io/n8nio/n8n:1.121.3
+    image: docker.n8n.io/n8nio/n8n:2.2.4
     ports:
       - "5678:5678"
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_node_modules:/home/node/node_modules
-      - ./src/projects:/remotion/projects #ホストでpermissionsを777にしておく
-      - ./public:/remotion/public #ホストでpermissionsを777にしておく
-      - ./out:/remotion/out
+      - ./src/projects:/home/node/.n8n-files/projects #ホストでpermissionsを777にしておく
+      - ./public:/home/node/.n8n-files/public #ホストでpermissionsを777にしておく
+      - ./out:/home/node/.n8n-files/out
     stdin_open: true
     tty: true
     environment:
