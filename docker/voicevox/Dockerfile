@@ -1,4 +1,4 @@
-FROM voicevox/voicevox_engine:nvidia-latest
+FROM voicevox/voicevox_engine:nvidia-0.25.1
 
 # curlとjqをインストール（辞書ファイルの検証用）
 RUN apt-get update && apt-get install -y curl jq && rm -rf /var/lib/apt/lists/*
