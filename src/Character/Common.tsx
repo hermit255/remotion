@@ -63,10 +63,31 @@ export function createCharacterCanvas<T extends Record<string, LayerMetadata>>(
   const modMetaData = processMetadata(metaData, config.basePath) as T;
   const allLayers = collectAllLayers(modMetaData);
 
+  // デフォルトの可視性を設定して、初期表示用のレイヤーを取得
+  const getDefaultLayers = (): Array<{element: LayerMetadata, imagePath: string}> => {
+    allLayers.forEach(({ layer }: {layer: LayerMetadata, parentIndex: number, parentIndices: number[]}) => {
+      layer.visible = false;
+    });
+    config.setDefaultVisibility(modMetaData, allLayers);
+    return getVisibleLayersSorted(allLayers);
+  };
+
+  // 初期表示用のレイヤーを取得（コンポーネント外で一度だけ実行）
+  const defaultLayers = getDefaultLayers();
+  
+  // 初期表示用の画像を事前にプリロード
+  if (typeof window !== 'undefined') {
+    defaultLayers.forEach(({ imagePath }) => {
+      const img = new Image();
+      img.src = imagePath;
+    });
+  }
+
   return (props: CharacterCanvasProps) => {
     const frame = useCurrentFrame();
     const { lipSync, emotion, pose, flipHorizontal, style, className, ...domProps } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const isInitializedRef = useRef(false);
 
     // visible=trueのレイヤーを取得（useMemoでメモ化）
     const imageMetadata = useMemo((): Array<{element: LayerMetadata, imagePath: string}> => {
@@ -98,8 +119,10 @@ export function createCharacterCanvas<T extends Record<string, LayerMetadata>>(
     }, [emotion, pose, lipSync, frame]);
 
     // canvasのサイズを計算（useMemoでメモ化）
+    // 初期描画時はdefaultLayersを使用、それ以外はimageMetadataを使用
     const canvasSize = useMemo(() => {
-      return calculateCanvasSize(imageMetadata);
+      const layersToUse = imageMetadata.length > 0 ? imageMetadata : defaultLayers;
+      return calculateCanvasSize(layersToUse);
     }, [imageMetadata]);
 
     // canvasのサイズを初期設定
@@ -116,7 +139,19 @@ export function createCharacterCanvas<T extends Record<string, LayerMetadata>>(
     // canvasに画像を描画
     useEffect(() => {
       const canvas = canvasRef.current;
-      if (!canvas || imageMetadata.length === 0) return;
+      if (!canvas) return;
+
+      // 最初のフレームで初期表示用のレイヤーを描画
+      if (!isInitializedRef.current && defaultLayers.length > 0) {
+        isInitializedRef.current = true;
+        renderLayersToCanvas(canvas, defaultLayers)
+          .catch((error: unknown) => {
+            console.error('Error loading initial images for character:', error);
+          });
+      }
+
+      // imageMetadataが空の場合は描画しない
+      if (imageMetadata.length === 0) return;
 
       let cancelled = false;
       renderLayersToCanvas(canvas, imageMetadata)
@@ -129,6 +164,7 @@ export function createCharacterCanvas<T extends Record<string, LayerMetadata>>(
       return () => {
         cancelled = true;
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [imageMetadata]);
 
     const containerStyle: React.CSSProperties = useMemo(() => ({

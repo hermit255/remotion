@@ -264,23 +264,32 @@ export const renderLayersToCanvas = async (
 
   // 画像を読み込んで描画（キャッシュを利用）
   try {
+    // すべての画像を読み込む（キャッシュを利用）
     const images = await Promise.all(
       layers.map(({ imagePath }) => loadImage(imagePath))
     );
 
-    // canvasをクリア
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // すべての画像が読み込まれたことを確認
+    const allImagesReady = images.every(img => img.complete);
+    
+    // 画像が読み込まれるまで前の描画を保持
+    if (allImagesReady) {
+      // canvasをクリア
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 各画像を描画
-    images.forEach((img, index) => {
-      const { element } = layers[index];
-      const x = element.left;
-      const y = element.top;
-      const width = element.width;
-      const height = element.height;
-      
-      ctx.drawImage(img, x, y, width, height);
-    });
+      // 各画像を描画
+      layers.forEach(({ element }, index) => {
+        const img = images[index];
+        if (img && img.complete) {
+          const x = element.left;
+          const y = element.top;
+          const width = element.width;
+          const height = element.height;
+          
+          ctx.drawImage(img, x, y, width, height);
+        }
+      });
+    }
   } catch (error) {
     console.error('Error loading images for canvas:', error);
     throw error;
