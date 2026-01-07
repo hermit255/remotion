@@ -53,13 +53,16 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-  # python:
-  #   build:
-  #     dockerfile: docker/python/Dockerfile
-  #   user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-  #   volumes:
-  #     - ./python:/app
-  #   command: python /app/export_layers.py ${TARGET_FILE:?err}
+  python:
+    profiles:
+      - psd
+    build:
+      dockerfile: docker/python/Dockerfile
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    volumes:
+      - ./python:/app
+      - ./python/input:/app/input
+      - ./python/output:/app/output
 volumes:
   n8n_data:
   n8n_node_modules:

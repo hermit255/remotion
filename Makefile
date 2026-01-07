@@ -46,3 +46,11 @@ render:
 		(echo "Error: Rendering failed" && exit 1)
 	@echo "✓ Rendering completed: out/$(title).mp4"
 	
+# psd コマンド
+# 使用方法: make psd TARGET_FILE=metan
+psd:
+	@if [ -z "$(TARGET_FILE)" ]; then \
+		echo "Error: TARGET_FILE引数が必要です。例: make psd TARGET_FILE=metan"; \
+		exit 1; \
+	fi
+	@docker compose --profile psd run --rm python python /app/export_layers.py $(TARGET_FILE)

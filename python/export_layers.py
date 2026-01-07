@@ -3,12 +3,25 @@ import os
 import json
 from psd_tools import PSDImage
 
+def clean_layer_name(name):
+    """
+    レイヤー名から記号を取り除く共通関数
+    save_layerとget_layer_infoで同じロジックを使用するため
+    """
+    clean_name = "".join([c for c in name if c.isalnum() or c in (' ', '_', '-')]).strip()
+    if not clean_name:
+        clean_name = "layer"
+    return clean_name
+
 def get_layer_info(layer, index):
     """
     再構成に必要な情報を網羅的に抽出する
     """
+    # 記号を取り除いた名前を生成（save_layerと同じロジック）
+    clean_name = clean_layer_name(layer.name)
+    
     info = {
-        "name": layer.name,
+        "name": clean_name,
         "index": index,                   # 重なり順の管理用
         "left": layer.left,
         "right": layer.right,
@@ -34,11 +47,7 @@ def save_layer(layer, current_path):
     """
     レイヤーを再帰的に処理してPNG保存する関数
     """
-    clean_name = "".join([c for c in layer.name if c.isalnum() or c in (' ', '_', '-')]).strip()
-    if not clean_name:
-        clean_name = "layer"
-    
-    node_name = clean_name
+    node_name = clean_layer_name(layer.name)
 
     if layer.is_group():
         new_path = os.path.join(current_path, node_name)
