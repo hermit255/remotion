@@ -6,15 +6,8 @@ import { ZundaTalk } from "../../templates/ZundaTalk";
 import { ZundaTalkProps } from "../../util/schema/zundaTalkSchema";
 import { Message, Scenario } from "../../util/schema/sequenceSchema";
 import { genVoiceSequence, genSubtitleSequenceV2 as genSubtitleSequence, getTalks } from "../../components/Talk";
-import { getAIScript, getYoutubeDescription } from "../../util/Description";
 
 const title = "2025mmdd";
-const newsSource = "";
-const description = "";
-const youtubeTitle = "" + "【ずんだもん解説】";
-console.log('台本', getAIScript(title, description, newsSource));
-console.log('YouTubeタイトル', youtubeTitle);
-console.log('YouTube説明文', getYoutubeDescription(description, newsSource));
 
 // JSONファイルを安全に読み込む
 let scenarioData: unknown;
