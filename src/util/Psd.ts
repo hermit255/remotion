@@ -174,25 +174,7 @@ export const getVisibleLayersSorted = (
   allLayers: Array<{layer: LayerMetadata, parentIndex: number, parentIndices: number[]}>
 ): Array<{element: LayerMetadata, imagePath: string}> => {
   return allLayers
-    .filter(({ layer, parentIndex, parentIndices }) => {
-      // Check if the layer itself and all its ancestor groups are visible
-      const isAncestorVisible = (parentIndices: number[], parentIndex: number): boolean => {
-        if (parentIndex === -1) {
-          return true; // Root layer, no ancestors
-        }
-        let currentParentIndex = parentIndex;
-        for (let i = parentIndices.length - 1; i >= 0; i--) {
-          const parentLayer = allLayers.find(({ layer }) => layer.index === currentParentIndex)?.layer;
-          if (!parentLayer || !parentLayer.visible) {
-            return false; // Ancestor is not visible
-          }
-          currentParentIndex = parentIndices[i];
-        }
-        return true;
-      };
-
-      return layer.visible === true && isAncestorVisible(parentIndices, parentIndex);
-    })
+    .filter(({ layer }) => layer.visible === true)
     .map(({ layer, parentIndex, parentIndices }) => {
       const imagePath = (layer as any).imagePath;
       return { element: layer, imagePath, parentIndex, parentIndices };
@@ -312,32 +294,4 @@ export const renderLayersToCanvas = async (
     console.error('Error loading images for canvas:', error);
     throw error;
   }
-};
-
-// Define distinct types for GroupLayer and ImageLayer
-export type GroupLayer = Omit<LayerMetadata, 'is_group' | 'children'> & {
-  is_group: true;
-  children: Record<string, LayerMetadata>;
-};
-
-export type ImageLayer = Omit<LayerMetadata, 'is_group' | 'children'> & {
-  is_group: false;
-  children?: undefined;
-};
-
-export type LayerMetadataUnion = GroupLayer | ImageLayer;
-
-// Recursive function to collect all descendant ImageLayers from a GroupLayer
-export const collectImageLayers = (group: GroupLayer): ImageLayer[] => {
-  const imageLayers: ImageLayer[] = [];
-
-  Object.values(group.children).forEach((child) => {
-    if (child.is_group) {
-      imageLayers.push(...collectImageLayers(child as GroupLayer));
-    } else {
-      imageLayers.push(child as ImageLayer);
-    }
-  });
-
-  return imageLayers;
 };

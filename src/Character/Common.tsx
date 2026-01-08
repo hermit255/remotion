@@ -7,12 +7,8 @@ import {
   calculateCanvasSize,
   getVisibleLayersSorted,
   renderLayersToCanvas,
-  collectImageLayers,
   type LayerMetadata,
   type Metadata,
-  type LayerMetadataUnion,
-  type GroupLayer,
-  type ImageLayer,
 } from "../util/Psd";
 
 // レイヤーの可視性を設定するヘルパー関数
