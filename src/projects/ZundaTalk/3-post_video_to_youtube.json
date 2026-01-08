@@ -12,7 +12,7 @@
           "description": "={{ $('parse as json').item.json.data.youtubeDescription.replace(/\\\\n/g, '\\n') }}",
           "notifySubscribers": true,
           "privacyStatus": "private",
-          "publishAt": "2026-01-06T23:35:00",
+          "publishAt": "={{ $now.setZone('Asia/Tokyo').plus({ days: 1 }).startOf('day') }}",
           "selfDeclaredMadeForKids": false
         }
       },
@@ -38,7 +38,7 @@
             {
               "id": "f8abd1b9-564b-40fa-8b9d-005b87886657",
               "name": "date",
-              "value": "20260107",
+              "value": "={{ '' || DateTime.now().format('yyyy-MM-dd') }}",
               "type": "string"
             }
           ]
@@ -194,7 +194,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "80f2e914-a5f2-4468-a2fc-652bf41466e6",
+  "versionId": "8b4e63b5-8c4a-4b8f-9b35-1aa090d23553",
   "meta": {
     "instanceId": "21614b7f8ba6d061d9202ab19bc2c1fc59a7504c280c189355575d2e43266848"
   },
